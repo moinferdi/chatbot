@@ -1,0 +1,37 @@
+chatbot:
+  enabled:
+    type: bool
+    default: false
+    label: 'LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:settings.enabled'
+    category: Chatbot
+  openWebUiBaseUrl:
+    type: string
+    default: 'https://your-openwebui.example.com'
+    label: 'LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:settings.baseUrl'
+    category: Chatbot
+  defaultModel:
+    type: string
+    default: 'gpt-4o'
+    label: 'LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:settings.defaultModel'
+    category: Chatbot
+  color:
+    primary:
+      type: string
+      default: '#4F9EF7'
+      label: 'LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:settings.colorPrimary'
+      category: Chatbot
+    background:
+      type: string
+      default: '#ffffff'
+      label: 'LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:settings.colorBackground'
+      category: Chatbot
+    text:
+      type: string
+      default: '#1a1a1a'
+      label: 'LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:settings.colorText'
+      category: Chatbot
+  position:
+    type: string
+    default: 'bottom-right'
+    label: 'LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:settings.position'
+    category: Chatbot

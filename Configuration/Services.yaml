@@ -1,0 +1,9 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Moinferdi\Chatbot\:
+    resource: "../Classes/*"
+    exclude: "../Classes/Dto/*"

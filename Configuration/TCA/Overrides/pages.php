@@ -1,0 +1,165 @@
+<?php
+
+defined('TYPO3') or die();
+
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
+(static function (): void {
+    $ll = 'LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:';
+
+    $columns = [
+        'tx_chatbot_enabled' => [
+            'exclude' => true,
+            'label' => $ll . 'pages.tx_chatbot_enabled',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'items' => [[
+                    'label' => '',
+                    'labelChecked' => 'Enabled',
+                    'labelUnchecked' => 'Disabled',
+                ]],
+                'default' => 0,
+            ],
+        ],
+        'tx_chatbot_everywhere' => [
+            'exclude' => true,
+            'label' => $ll . 'pages.tx_chatbot_everywhere',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'items' => [[
+                    'label' => '',
+                    'labelChecked' => 'Enabled',
+                    'labelUnchecked' => 'Disabled',
+                ]],
+                'default' => 0,
+            ],
+        ],
+        'tx_chatbot_base_url' => [
+            'exclude' => true,
+            'label' => $ll . 'pages.tx_chatbot_base_url',
+            'config' => [
+                'type' => 'input',
+                'eval' => 'trim,required',
+                'placeholder' => 'https://your-openwebui.example.com',
+                'size' => 40,
+                'max' => 255,
+            ],
+        ],
+        'tx_chatbot_model' => [
+            'exclude' => true,
+            'label' => $ll . 'pages.tx_chatbot_model',
+            'config' => [
+                'type' => 'input',
+                'eval' => 'trim,required',
+                'placeholder' => 'gpt-4o',
+                'size' => 30,
+                'max' => 100,
+            ],
+        ],
+        'tx_chatbot_api_key' => [
+            'exclude' => true,
+            'label' => $ll . 'pages.tx_chatbot_api_key',
+            'config' => [
+                'type' => 'input',
+                'eval' => 'trim,password',
+                'size' => 40,
+                'max' => 4096,
+                'placeholder' => 'sk-... or %env(CHATBOT_API_KEY)%',
+            ],
+        ],
+        'tx_chatbot_color_primary' => [
+            'exclude' => true,
+            'label' => $ll . 'pages.tx_chatbot_color_primary',
+            'config' => [
+                'type' => 'color',
+                'renderType' => 'colorpicker',
+                'size' => 10,
+                'valuePicker' => [
+                    'items' => [
+                        ['Blue', '#4F9EF7'],
+                        ['Indigo', '#6366F1'],
+                        ['Purple', '#A855F7'],
+                        ['Pink', '#EC4899'],
+                        ['Green', '#22C55E'],
+                        ['Orange', '#F97316'],
+                        ['Red', '#EF4444'],
+                    ],
+                ],
+                'default' => '#4F9EF7',
+            ],
+        ],
+        'tx_chatbot_color_background' => [
+            'exclude' => true,
+            'label' => $ll . 'pages.tx_chatbot_color_background',
+            'config' => [
+                'type' => 'color',
+                'renderType' => 'colorpicker',
+                'size' => 10,
+                'default' => '#ffffff',
+            ],
+        ],
+        'tx_chatbot_color_text' => [
+            'exclude' => true,
+            'label' => $ll . 'pages.tx_chatbot_color_text',
+            'config' => [
+                'type' => 'color',
+                'renderType' => 'colorpicker',
+                'size' => 10,
+                'default' => '#1a1a1a',
+            ],
+        ],
+        'tx_chatbot_position' => [
+            'exclude' => true,
+            'label' => $ll . 'pages.tx_chatbot_position',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'items' => [
+                    ['label' => $ll . 'pages.tx_chatbot_position.bottom-right', 'value' => 'bottom-right'],
+                    ['label' => $ll . 'pages.tx_chatbot_position.bottom-left', 'value' => 'bottom-left'],
+                ],
+                'default' => 'bottom-right',
+            ],
+        ],
+        'tx_chatbot_start_message' => [
+            'exclude' => true,
+            'label' => $ll . 'pages.tx_chatbot_start_message',
+            'config' => [
+                'type' => 'text',
+                'cols' => 40,
+                'rows' => 3,
+                'max' => 500,
+                'placeholder' => 'Hello! How can I help you today?',
+            ],
+        ],
+    ];
+
+    foreach ($columns as $field => $config) {
+        if (isset($GLOBALS['TCA']['pages']['columns'][$field])) {
+            $GLOBALS['TCA']['pages']['columns'][$field] = $config;
+        } else {
+            ExtensionManagementUtility::addTCAcolumns('pages', [$field => $config]);
+        }
+    }
+
+    $chatbotFields = implode(',', [
+        '--div--;' . $ll . 'pages.tab.chatbot',
+        'tx_chatbot_enabled', 'tx_chatbot_everywhere',
+        'tx_chatbot_base_url', 'tx_chatbot_model', 'tx_chatbot_api_key',
+        'tx_chatbot_color_primary', 'tx_chatbot_color_background', 'tx_chatbot_color_text',
+        'tx_chatbot_position', 'tx_chatbot_start_message',
+    ]);
+
+    ExtensionManagementUtility::addToAllTCAtypes(
+        'pages',
+        $chatbotFields,
+        '',
+        'after:--div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:access'
+    );
+
+    foreach (array_keys($columns) as $field) {
+        $GLOBALS['TCA']['pages']['columns'][$field]['displayCond'] = 'FIELD:is_siteroot:=:1';
+    }
+})();

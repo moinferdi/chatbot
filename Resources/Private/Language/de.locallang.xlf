@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:chatbot/Resources/Private/Language/locallang.xlf" product-name="chatbot">
+    <header/>
+    <body>
+      <trans-unit id="widget.title" resname="widget.title"><target>Chat-Assistent</target></trans-unit>
+      <trans-unit id="widget.launcher.label" resname="widget.launcher.label"><target>Chat öffnen</target></trans-unit>
+      <trans-unit id="widget.close" resname="widget.close"><target>Chat schließen</target></trans-unit>
+      <trans-unit id="widget.placeholder" resname="widget.placeholder"><target>Nachricht eingeben…</target></trans-unit>
+      <trans-unit id="widget.send" resname="widget.send"><target>Senden</target></trans-unit>
+      <trans-unit id="widget.loading" resname="widget.loading"><target>Denkt nach…</target></trans-unit>
+      <trans-unit id="widget.error" resname="widget.error"><target>Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.</target></trans-unit>
+      <trans-unit id="widget.error.empty" resname="widget.error.empty"><target>Bitte geben Sie eine Nachricht ein.</target></trans-unit>
+      <trans-unit id="widget.error.network" resname="widget.error.network"><target>Netzwerkfehler. Bitte prüfen Sie Ihre Verbindung.</target></trans-unit>
+      <trans-unit id="widget.error.disabled" resname="widget.error.disabled"><target>Der Chatbot ist derzeit nicht verfügbar.</target></trans-unit>
+      <trans-unit id="widget.poweredBy" resname="widget.poweredBy"><target>Bereitgestellt von KI</target></trans-unit>
+    </body>
+  </file>
+</xliff>

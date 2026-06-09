@@ -1,0 +1,4 @@
+name: moinferdi/chatbot
+label: Chatbot (LLM Chat Widget)
+dependencies:
+  - typo3/fluid-styled-content

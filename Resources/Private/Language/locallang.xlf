@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="EXT:chatbot/Resources/Private/Language/locallang.xlf" product-name="chatbot">
+    <header/>
+    <body>
+      <trans-unit id="widget.title" resname="widget.title"><source>Chat Assistant</source></trans-unit>
+      <trans-unit id="widget.launcher.label" resname="widget.launcher.label"><source>Open chat</source></trans-unit>
+      <trans-unit id="widget.close" resname="widget.close"><source>Close chat</source></trans-unit>
+      <trans-unit id="widget.placeholder" resname="widget.placeholder"><source>Type your message…</source></trans-unit>
+      <trans-unit id="widget.send" resname="widget.send"><source>Send</source></trans-unit>
+      <trans-unit id="widget.loading" resname="widget.loading"><source>Thinking…</source></trans-unit>
+      <trans-unit id="widget.error" resname="widget.error"><source>Something went wrong. Please try again.</source></trans-unit>
+      <trans-unit id="widget.error.empty" resname="widget.error.empty"><source>Please type a message.</source></trans-unit>
+      <trans-unit id="widget.error.network" resname="widget.error.network"><source>Network error. Check your connection.</source></trans-unit>
+      <trans-unit id="widget.error.disabled" resname="widget.error.disabled"><source>The chatbot is currently unavailable.</source></trans-unit>
+      <trans-unit id="widget.poweredBy" resname="widget.poweredBy"><source>Powered by AI</source></trans-unit>
+    </body>
+  </file>
+</xliff>

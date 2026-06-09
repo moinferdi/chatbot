@@ -1,0 +1,123 @@
+<html
+  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+  data-namespace-typo3-fluid="true"
+>
+  <f:asset.css
+    identifier="chatbot"
+    href="EXT:chatbot/Resources/Public/Css/chatbot.css"
+  />
+  <f:asset.script
+    identifier="chatbot"
+    src="EXT:chatbot/Resources/Public/JavaScript/chatbot.js"
+  />
+
+  <div
+    id="moinferdi-chatbot"
+    class="cb-widget cb-widget--{position}"
+    role="region"
+    aria-label="{f:translate(key:'widget.title')}"
+    data-endpoint="{endpointUrl}"
+    data-model="{model}"
+    data-start-message="{startMessage}"
+    style="--cb-primary:{colorPrimary}; --cb-bg:{colorBackground}; --cb-text:{colorText};"
+  >
+    <button
+      class="cb-launcher"
+      aria-label="{f:translate(key:'widget.launcher.label')}"
+      aria-expanded="false"
+      aria-controls="cb-panel"
+    >
+      <svg
+        class="cb-launcher__icon cb-launcher__icon--open"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+        />
+      </svg>
+      <svg
+        class="cb-launcher__icon cb-launcher__icon--close"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+
+    <div
+      id="cb-panel"
+      class="cb-panel"
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="cb-panel__header">
+        <h3 class="cb-panel__title">{f:translate(key:'widget.title')}</h3>
+        <button
+          class="cb-panel__close"
+          aria-label="{f:translate(key:'widget.close')}"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="18"
+            height="18"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <div
+        class="cb-panel__messages"
+        id="cb-messages"
+        role="log"
+        aria-live="polite"
+      ></div>
+
+      <div class="cb-panel__footer">
+        <div class="cb-panel__input-row">
+          <label for="cb-input" class="sr-only"
+            >{f:translate(key:'widget.placeholder')}</label
+          >
+          <textarea
+            id="cb-input"
+            class="cb-panel__input"
+            placeholder="{f:translate(key:'widget.placeholder')}"
+            rows="1"
+            aria-label="{f:translate(key:'widget.placeholder')}"
+          ></textarea>
+          <button
+            id="cb-send"
+            class="cb-panel__send"
+            aria-label="{f:translate(key:'widget.send')}"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+            </svg>
+          </button>
+        </div>
+        <div class="cb-panel__attribution">
+          {f:translate(key:'widget.poweredBy')}
+        </div>
+      </div>
+
+      <div class="sr-only" aria-live="assertive" id="cb-live-region"></div>
+    </div>
+  </div>
+</html>

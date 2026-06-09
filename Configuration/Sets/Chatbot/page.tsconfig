@@ -1,0 +1,12 @@
+mod.wizards.newContentElement.wizardItems.chatbot {
+  header = LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:wizard.group
+  elements {
+    chatbot_widget {
+      iconIdentifier = extensions-chatbot-widget
+      title = LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:wizard.widget
+      description = LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:wizard.widgetDescription
+      tt_content_defValues.CType = chatbot_widget
+    }
+  }
+  show := addToList(chatbot_widget)
+}

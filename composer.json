@@ -1,0 +1,32 @@
+{
+  "name": "moinferdi/chatbot",
+  "type": "typo3-cms-extension",
+  "description": "LLM chatbot widget for TYPO3 v13 — BYOK, OpenWebUI-first, proxy-backed",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "moinferdi",
+      "role": "Developer"
+    }
+  ],
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "chatbot"
+    }
+  },
+  "require": {
+    "php": "^8.2 || ^8.3",
+    "typo3/cms-core": "^13.4",
+    "typo3/cms-frontend": "^13.4",
+    "typo3/cms-fluid": "^13.4",
+    "typo3/cms-fluid-styled-content": "^13.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Moinferdi\\Chatbot\\": "Classes/"
+    }
+  },
+  "config": {
+    "sort-packages": true
+  }
+}

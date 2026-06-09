@@ -1,0 +1,23 @@
+# Register Fluid template root paths for this extension
+lib.contentElement {
+  templateRootPaths.200 = EXT:chatbot/Resources/Private/Templates/
+  partialRootPaths.200 = EXT:chatbot/Resources/Private/Partials/
+  layoutRootPaths.200 = EXT:chatbot/Resources/Private/Layouts/
+}
+
+# Content element rendering — placed per-page via Insert Content Element wizard
+tt_content.chatbot_widget =< lib.contentElement
+tt_content.chatbot_widget {
+  templateName = ContentElements/ChatbotWidget
+  dataProcessing.10 = Moinferdi\Chatbot\DataProcessing\ChatbotConfigProcessor
+}
+
+# Global injection — renders widget on every page when root-page toggle is on
+page.1909 = FLUIDTEMPLATE
+page.1909 {
+  templateName = ContentElements/ChatbotWidget
+  templateRootPaths.0 = EXT:chatbot/Resources/Private/Templates/
+  partialRootPaths.0 = EXT:chatbot/Resources/Private/Partials/
+  layoutRootPaths.0 = EXT:chatbot/Resources/Private/Layouts/
+  dataProcessing.10 = Moinferdi\Chatbot\DataProcessing\ChatbotConfigProcessor
+}
