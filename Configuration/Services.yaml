@@ -7,3 +7,8 @@ services:
   Moinferdi\Chatbot\:
     resource: "../Classes/*"
     exclude: "../Classes/Dto/*"
+
+  Moinferdi\Chatbot\DataProcessing\ChatbotConfigProcessor:
+    tags:
+      - name: "data.processor"
+        identifier: "chatbot-config"
