@@ -15,7 +15,7 @@
     id="moinferdi-chatbot"
     class="cb-widget cb-widget--{position}"
     role="region"
-    aria-label="{f:translate(key:'widget.title')}"
+    aria-label="{f:translate(key:'widget.title', extensionName:'Chatbot', default:'Chat assistant')}"
     data-endpoint="{endpointUrl}"
     data-model="{model}"
     data-start-message="{startMessage}"
@@ -23,7 +23,7 @@
   >
     <button
       class="cb-launcher"
-      aria-label="{f:translate(key:'widget.launcher.label')}"
+      aria-label="{f:translate(key:'widget.launcher.label', extensionName:'Chatbot', default:'Open chat')}"
       aria-expanded="false"
       aria-controls="cb-panel"
     >
@@ -62,10 +62,13 @@
       aria-modal="true"
     >
       <div class="cb-panel__header">
-        <h3 class="cb-panel__title">{f:translate(key:'widget.title')}</h3>
+        <h3 class="cb-panel__title">
+          {f:translate(key:'widget.title', extensionName:'Chatbot',
+          default:'Chat assistant')}
+        </h3>
         <button
           class="cb-panel__close"
-          aria-label="{f:translate(key:'widget.close')}"
+          aria-label="{f:translate(key:'widget.close', extensionName:'Chatbot', default:'Close chat')}"
         >
           <svg
             viewBox="0 0 24 24"
@@ -93,19 +96,20 @@
       <div class="cb-panel__footer">
         <div class="cb-panel__input-row">
           <label for="cb-input" class="sr-only"
-            >{f:translate(key:'widget.placeholder')}</label
+            >{f:translate(key:'widget.placeholder', extensionName:'Chatbot',
+            default:'Type your message…')}</label
           >
           <textarea
             id="cb-input"
             class="cb-panel__input"
-            placeholder="{f:translate(key:'widget.placeholder')}"
+            placeholder="{f:translate(key:'widget.placeholder', extensionName:'Chatbot', default:'Type your message…')}"
             rows="1"
-            aria-label="{f:translate(key:'widget.placeholder')}"
+            aria-label="{f:translate(key:'widget.placeholder', extensionName:'Chatbot', default:'Type your message…')}"
           ></textarea>
           <button
             id="cb-send"
             class="cb-panel__send"
-            aria-label="{f:translate(key:'widget.send')}"
+            aria-label="{f:translate(key:'widget.send', extensionName:'Chatbot', default:'Send')}"
           >
             <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
               <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
@@ -113,7 +117,8 @@
           </button>
         </div>
         <div class="cb-panel__attribution">
-          {f:translate(key:'widget.poweredBy')}
+          {f:translate(key:'widget.poweredBy', extensionName:'Chatbot',
+          default:'Powered by AI')}
         </div>
       </div>
 
