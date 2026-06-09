@@ -74,7 +74,6 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
             'label' => $ll . 'pages.tx_chatbot_color_primary',
             'config' => [
                 'type' => 'color',
-                'renderType' => 'colorpicker',
                 'size' => 10,
                 'valuePicker' => [
                     'items' => [
@@ -95,7 +94,6 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
             'label' => $ll . 'pages.tx_chatbot_color_background',
             'config' => [
                 'type' => 'color',
-                'renderType' => 'colorpicker',
                 'size' => 10,
                 'default' => '#ffffff',
             ],
@@ -105,7 +103,6 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
             'label' => $ll . 'pages.tx_chatbot_color_text',
             'config' => [
                 'type' => 'color',
-                'renderType' => 'colorpicker',
                 'size' => 10,
                 'default' => '#1a1a1a',
             ],
