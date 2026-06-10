@@ -116,7 +116,7 @@ final class ChatClientTest extends TestCase
         $bodyStream->method('__toString')->willReturn('Too many requests');
 
         $this->expectException(UpstreamException::class);
-        $this->expectExceptionMessage('Unknown upstream error');
+        $this->expectExceptionMessage('Too many requests');
 
         $client = new ChatClient($httpClient, $requestFactory, $streamFactory, $logger);
         $client->complete($chatRequest, $config);
