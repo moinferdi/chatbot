@@ -12,3 +12,20 @@ services:
     tags:
       - name: "data.processor"
         identifier: "chatbot-config"
+
+  # Dedicated HTTP client with upstream timeouts
+  chatbot.guzzle_client:
+    class: GuzzleHttp\Client
+    arguments:
+      $config:
+        timeout: 30
+        connect_timeout: 5
+        http_errors: false
+
+  Moinferdi\Chatbot\Service\ChatClient:
+    arguments:
+      $httpClient: '@chatbot.guzzle_client'
+
+  Moinferdi\Chatbot\Service\RateLimiter:
+    arguments:
+      $cache: '@cache.chatbot_ratelimit'

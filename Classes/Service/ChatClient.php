@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Moinferdi\Chatbot\Service;
 
 use Moinferdi\Chatbot\Dto\ChatRequest;
-use Psr\Http\Client\ClientInterface;
+use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Log\LoggerInterface;
@@ -13,8 +13,9 @@ use Psr\Log\LoggerInterface;
 final class ChatClient
 {
     public function __construct(
-        private readonly ClientInterface $httpClient,
+        private readonly GuzzleClient $httpClient,
         private readonly RequestFactoryInterface $requestFactory,
+        private readonly StreamFactoryInterface $streamFactory,
         private readonly LoggerInterface $logger,
     ) {}
 
@@ -34,29 +35,17 @@ final class ChatClient
 
         $body = json_encode($payload, JSON_THROW_ON_ERROR);
 
-        // Build the request with a proper writable body stream
         $request = $this->requestFactory->createRequest('POST', $url)
             ->withHeader('Authorization', 'Bearer ' . $config->apiKey)
             ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json');
-
-        // Ensure body is properly set using php://temp stream
-        $bodyStream = fopen('php://temp', 'r+');
-        if ($bodyStream === false) {
-            throw new \RuntimeException('Failed to create request body stream.');
-        }
-        fwrite($bodyStream, $body);
-        rewind($bodyStream);
-
-        // Create a proper PSR-7 stream and attach it
-        $request = $request->withBody($this->createStreamFromResource($bodyStream));
+            ->withHeader('Accept', 'application/json')
+            ->withBody($this->streamFactory->createStream($body));
 
         try {
-            $response = $this->httpClient->sendRequest($request);
+            $response = $this->httpClient->send($request);
             $responseBody = (string) $response->getBody();
 
             if ($response->getStatusCode() !== 200) {
-                // Try to extract upstream error detail
                 $detail = '';
                 try {
                     $errData = json_decode($responseBody, true, 512, JSON_THROW_ON_ERROR);
@@ -102,153 +91,71 @@ final class ChatClient
     }
 
     /**
-     * Wrap a PHP stream resource in a PSR-7 StreamInterface.
+     * Stream completions from the upstream, yielding raw SSE bytes for passthrough.
+     *
+     * The upstream (OpenWebUI / OpenAI-compatible) emits a `text/event-stream`
+     * body; we forward its bytes verbatim so the browser's SSE parser sees the
+     * original framing (including the terminating `data: [DONE]`).
+     *
+     * @return \Generator<string>
+     * @throws UpstreamException when the upstream rejects the request (non-200)
+     * @throws \RuntimeException when the upstream is unreachable
      */
-    private function createStreamFromResource($resource): \Psr\Http\Message\StreamInterface
+    public function completeStream(ChatRequest $chatRequest, ChatbotConfig $config): \Generator
     {
-        return new class($resource) implements \Psr\Http\Message\StreamInterface {
-            /** @var resource|null */
-            private $stream;
+        $url = rtrim($config->baseUrl, '/') . '/api/chat/completions';
 
-            /** @param resource $stream */
-            public function __construct($stream)
-            {
-                $this->stream = $stream;
+        $payload = [
+            'model' => $config->model,
+            'messages' => $chatRequest->messages,
+            'stream' => true,
+        ];
+
+        $body = json_encode($payload, JSON_THROW_ON_ERROR);
+
+        $request = $this->requestFactory->createRequest('POST', $url)
+            ->withHeader('Authorization', 'Bearer ' . $config->apiKey)
+            ->withHeader('Content-Type', 'application/json')
+            ->withHeader('Accept', 'text/event-stream')
+            ->withBody($this->streamFactory->createStream($body));
+
+        try {
+            // Guzzle stream option prevents buffering the full response
+            $response = $this->httpClient->send($request, ['stream' => true]);
+        } catch (\Throwable $e) {
+            $this->logger->error('Chatbot stream failure', ['exception' => $e->getMessage()]);
+            throw new \RuntimeException('Stream connection to chat backend lost.', 0, $e);
+        }
+
+        $responseBody = $response->getBody();
+
+        if ($response->getStatusCode() !== 200) {
+            $raw = (string) $responseBody;
+            $detail = '';
+            try {
+                $errData = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+                $detail = $errData['detail'] ?? $errData['error'] ?? $errData['message'] ?? '';
+            } catch (\JsonException) {
+                $detail = mb_substr($raw, 0, 200);
             }
 
-            public function __toString(): string
-            {
-                if ($this->stream === null) {
-                    return '';
-                }
-                try {
-                    $this->rewind();
-                    return (string) stream_get_contents($this->stream);
-                } catch (\Throwable) {
-                    return '';
-                }
-            }
+            $this->logger->error('Chatbot upstream stream error', [
+                'status' => $response->getStatusCode(),
+                'detail' => $detail,
+            ]);
 
-            public function close(): void
-            {
-                if (is_resource($this->stream)) {
-                    fclose($this->stream);
-                }
-                $this->stream = null;
-            }
+            throw new UpstreamException(
+                $response->getStatusCode(),
+                $detail ?: 'Unknown upstream error',
+            );
+        }
 
-            public function detach()
-            {
-                $r = $this->stream;
-                $this->stream = null;
-                return $r;
+        while (!$responseBody->eof()) {
+            $chunk = $responseBody->read(8192);
+            if ($chunk === '') {
+                break;
             }
-
-            public function getSize(): ?int
-            {
-                if ($this->stream === null) {
-                    return null;
-                }
-                $stat = fstat($this->stream);
-                return $stat['size'] ?? null;
-            }
-
-            public function tell(): int
-            {
-                if ($this->stream === null) {
-                    throw new \RuntimeException('Stream is detached.');
-                }
-                $pos = ftell($this->stream);
-                if ($pos === false) {
-                    throw new \RuntimeException('Cannot determine stream position.');
-                }
-                return $pos;
-            }
-
-            public function eof(): bool
-            {
-                return $this->stream === null || feof($this->stream);
-            }
-
-            public function isSeekable(): bool
-            {
-                return $this->stream !== null;
-            }
-
-            public function seek($offset, $whence = SEEK_SET): void
-            {
-                if ($this->stream === null) {
-                    throw new \RuntimeException('Stream is detached.');
-                }
-                fseek($this->stream, $offset, $whence);
-            }
-
-            public function rewind(): void
-            {
-                if ($this->stream !== null) {
-                    fseek($this->stream, 0);
-                }
-            }
-
-            public function isWritable(): bool
-            {
-                return $this->stream !== null;
-            }
-
-            public function write($string): int
-            {
-                if ($this->stream === null) {
-                    throw new \RuntimeException('Stream is detached.');
-                }
-                $bytes = fwrite($this->stream, $string);
-                if ($bytes === false) {
-                    throw new \RuntimeException('Failed to write to stream.');
-                }
-                return $bytes;
-            }
-
-            public function isReadable(): bool
-            {
-                return $this->stream !== null;
-            }
-
-            public function read($length): string
-            {
-                if ($this->stream === null) {
-                    throw new \RuntimeException('Stream is detached.');
-                }
-                $data = fread($this->stream, $length);
-                if ($data === false) {
-                    throw new \RuntimeException('Failed to read from stream.');
-                }
-                return $data;
-            }
-
-            public function getContents(): string
-            {
-                if ($this->stream === null) {
-                    throw new \RuntimeException('Stream is detached.');
-                }
-                $data = stream_get_contents($this->stream);
-                if ($data === false) {
-                    throw new \RuntimeException('Failed to get stream contents.');
-                }
-                return $data;
-            }
-
-            public function getMetadata($key = null): mixed
-            {
-                if ($this->stream === null) {
-                    return $key !== null ? null : [];
-                }
-                $meta = stream_get_meta_data($this->stream);
-                return $key !== null ? ($meta[$key] ?? null) : $meta;
-            }
-
-            public function __destruct()
-            {
-                $this->close();
-            }
-        };
+            yield $chunk;
+        }
     }
 }

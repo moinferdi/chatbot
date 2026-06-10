@@ -23,6 +23,7 @@
   let isOpen = false;
   let isLoading = false;
   let messages = [];
+  let abortController = null;
 
   function open() {
     isOpen = true;
@@ -46,7 +47,12 @@
   launcher.addEventListener("click", () => (isOpen ? close() : open()));
   closeBtn.addEventListener("click", () => close());
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && isOpen) close();
+    if (e.key === "Escape" && isOpen) {
+      if (isLoading && abortController) {
+        abortController.abort();
+      }
+      close();
+    }
   });
 
   function addMessage(role, content, extraClass) {
@@ -63,6 +69,20 @@
   function removeLoading() {
     const loader = messagesContainer.querySelector(".cb-message--loading");
     if (loader) loader.remove();
+  }
+
+  function createStreamMessage() {
+    const div = document.createElement("div");
+    div.className = "cb-message cb-message--assistant cb-message--streaming";
+    div.textContent = "";
+    messagesContainer.appendChild(div);
+    return div;
+  }
+
+  function finalizeStreamMessage(el, content) {
+    el.classList.remove("cb-message--streaming");
+    messages.push({ role: "assistant", content });
+    if (liveRegion) liveRegion.textContent = content;
   }
 
   function showLoading() {
@@ -88,16 +108,32 @@
     inputEl.value = "";
     autoResize();
     addMessage("user", text);
-    showLoading();
     setInputEnabled(false);
+
+    try {
+      const streamed = await sendStream(text);
+      if (!streamed) {
+        await sendNonStream(text);
+      }
+    } catch (err) {
+      removeLoading();
+      showError("Network error. Check your connection.");
+    } finally {
+      setInputEnabled(true);
+      inputEl.focus();
+    }
+  }
+
+  async function sendStream(text) {
+    abortController = new AbortController();
 
     try {
       const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages, model }),
+        body: JSON.stringify({ messages, model, stream: true }),
+        signal: abortController.signal,
       });
-      removeLoading();
 
       if (!response.ok) {
         let errorMsg = "Something went wrong. Please try again.";
@@ -106,19 +142,97 @@
           if (err.error) errorMsg = err.error;
         } catch (_) {}
         showError(errorMsg);
-        return;
+        return true;
       }
 
-      const data = await response.json();
-      const reply = data.content || data.message || "No response.";
-      addMessage("assistant", reply);
-    } catch (err) {
+      // Non-SSE response — backend didn't stream
+      const contentType = response.headers.get("content-type") || "";
+      if (!contentType.includes("text/event-stream")) {
+        const data = await response.json();
+        const reply = data.content || data.message || "No response.";
+        addMessage("assistant", reply);
+        return true;
+      }
+
+      showLoading();
+      const streamContainer = createStreamMessage();
+      let fullContent = "";
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const payload = line.slice(6).trim();
+
+          if (payload === "[DONE]") {
+            removeLoading();
+            finalizeStreamMessage(streamContainer, fullContent);
+            return true;
+          }
+
+          try {
+            const parsed = JSON.parse(payload);
+            const choice = parsed.choices?.[0];
+            const delta = choice?.delta?.content ?? choice?.message?.content ?? "";
+            if (delta) {
+              fullContent += delta;
+              streamContainer.textContent = fullContent;
+              scrollToBottom();
+            }
+          } catch (_) {
+            // Non-JSON line, skip
+          }
+        }
+      }
+
       removeLoading();
-      showError("Network error. Check your connection.");
-    } finally {
-      setInputEnabled(true);
-      inputEl.focus();
+      if (fullContent) {
+        finalizeStreamMessage(streamContainer, fullContent);
+      } else {
+        streamContainer.remove();
+        showError("Empty response from assistant.");
+      }
+      return true;
+    } catch (err) {
+      if (err.name === "AbortError") return true;
+      removeLoading();
+      showError("Stream connection lost. Please try again.");
+      return true;
     }
+  }
+
+  async function sendNonStream(text) {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages, model }),
+    });
+
+    removeLoading();
+
+    if (!response.ok) {
+      let errorMsg = "Something went wrong. Please try again.";
+      try {
+        const err = await response.json();
+        if (err.error) errorMsg = err.error;
+      } catch (_) {}
+      showError(errorMsg);
+      return;
+    }
+
+    const data = await response.json();
+    const reply = data.content || data.message || "No response.";
+    addMessage("assistant", reply);
   }
 
   function setInputEnabled(enabled) {

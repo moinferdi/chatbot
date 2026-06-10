@@ -66,7 +66,8 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
                 'eval' => 'trim,password',
                 'size' => 40,
                 'max' => 4096,
-                'placeholder' => 'sk-... or %env(CHATBOT_API_KEY)%',
+                'placeholder' => '%env(CHATBOT_API_KEY)%',
+                'default' => '%env(CHATBOT_API_KEY)%',
             ],
         ],
         'tx_chatbot_color_primary' => [

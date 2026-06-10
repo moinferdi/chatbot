@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Moinferdi\Chatbot\Middleware;
 
 use Moinferdi\Chatbot\Dto\ChatRequest;
+use Moinferdi\Chatbot\Http\SseStream;
 use Moinferdi\Chatbot\Service\ChatClient;
 use Moinferdi\Chatbot\Service\ConfigurationResolver;
+use Moinferdi\Chatbot\Service\ChatbotConfig;
+use Moinferdi\Chatbot\Service\RateLimiter;
 use Moinferdi\Chatbot\Service\UpstreamException;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -14,6 +17,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 final class ChatProxyMiddleware implements MiddlewareInterface
 {
@@ -22,6 +26,7 @@ final class ChatProxyMiddleware implements MiddlewareInterface
     public function __construct(
         private readonly ConfigurationResolver $configResolver,
         private readonly ChatClient $chatClient,
+        private readonly RateLimiter $rateLimiter,
         private readonly ResponseFactoryInterface $responseFactory,
         private readonly LoggerInterface $logger,
     ) {}
@@ -39,7 +44,7 @@ final class ChatProxyMiddleware implements MiddlewareInterface
         if (!$this->isSameOrigin($request)) {
             $this->logger->warning('Chatbot: cross-origin request blocked', [
                 'origin' => $request->getHeaderLine('Origin'),
-                'ip' => $request->getServerParams()['REMOTE_ADDR'] ?? 'unknown',
+                'ip' => $this->clientIp(),
             ]);
             return $this->errorResponse(403, 'Forbidden');
         }
@@ -67,21 +72,41 @@ final class ChatProxyMiddleware implements MiddlewareInterface
             return $this->errorResponse(502, 'Chatbot upstream must use HTTPS.');
         }
 
-        set_time_limit(30);
+        // Rate limiting
+        $clientIp = $this->clientIp();
+        if (!$this->rateLimiter->attempt($clientIp)) {
+            $this->logger->warning('Chatbot: rate limit exceeded', ['ip' => $clientIp]);
+            return $this->errorResponse(429, 'Too Many Requests', [
+                'Retry-After' => (string) $this->rateLimiter->retryAfter($clientIp),
+            ]);
+        }
 
+        if (!empty($data['stream'])) {
+            return $this->handleStream($chatRequest, $config);
+        }
+
+        return $this->handleNonStream($chatRequest, $config);
+    }
+
+    private function clientIp(): string
+    {
+        $ip = GeneralUtility::getIndpEnv('REMOTE_ADDR');
+        return is_string($ip) && $ip !== '' ? $ip : 'unknown';
+    }
+
+    private function handleNonStream(ChatRequest $chatRequest, ChatbotConfig $config): ResponseInterface
+    {
         try {
             $reply = $this->chatClient->complete($chatRequest, $config);
         } catch (UpstreamException $e) {
-            // API returned an error — pass the detail back to the client for debugging
             $this->logger->error('Chatbot upstream API error', [
                 'httpStatus' => $e->httpStatus,
                 'detail' => $e->getMessage(),
             ]);
-            return $this->errorResponse(502, 'Upstream error: ' . $e->getMessage());
+            return $this->errorResponse(502, 'Bad Gateway');
         } catch (\RuntimeException $e) {
-            // Connection-level failure (timeout, DNS, TLS)
             $this->logger->error('Chatbot proxy connection failure', ['error' => $e->getMessage()]);
-            return $this->errorResponse(502, 'Cannot reach chat backend. Check the OpenWebUI URL.');
+            return $this->errorResponse(502, 'Bad Gateway');
         }
 
         $responseBody = json_encode([
@@ -96,6 +121,42 @@ final class ChatProxyMiddleware implements MiddlewareInterface
         $response->getBody()->write($responseBody);
 
         return $response;
+    }
+
+    private function handleStream(ChatRequest $chatRequest, ChatbotConfig $config): ResponseInterface
+    {
+        // The body is a self-emitting stream: TYPO3's emitter calls emit() on it,
+        // which flushes each chunk as the upstream produces it (real SSE streaming).
+        return $this->responseFactory->createResponse(200)
+            ->withHeader('Content-Type', 'text/event-stream')
+            ->withHeader('Cache-Control', 'no-cache')
+            ->withHeader('Connection', 'keep-alive')
+            // Disable nginx proxy buffering so chunks reach the client immediately.
+            ->withHeader('X-Accel-Buffering', 'no')
+            ->withBody(new SseStream($this->streamFrames($chatRequest, $config)));
+    }
+
+    /**
+     * Forwards upstream SSE bytes verbatim, translating failures into an SSE
+     * error event (the 200 headers are already on the wire by the time the
+     * generator runs, so errors cannot be signalled via status code).
+     *
+     * @return \Generator<string>
+     */
+    private function streamFrames(ChatRequest $chatRequest, ChatbotConfig $config): \Generator
+    {
+        try {
+            yield from $this->chatClient->completeStream($chatRequest, $config);
+        } catch (UpstreamException $e) {
+            $this->logger->error('Chatbot upstream stream error', [
+                'httpStatus' => $e->httpStatus,
+                'detail' => $e->getMessage(),
+            ]);
+            yield "event: error\ndata: " . json_encode(['error' => 'Bad Gateway'], JSON_THROW_ON_ERROR) . "\n\n";
+        } catch (\RuntimeException $e) {
+            $this->logger->error('Chatbot stream connection failure', ['error' => $e->getMessage()]);
+            yield "event: error\ndata: " . json_encode(['error' => 'Bad Gateway'], JSON_THROW_ON_ERROR) . "\n\n";
+        }
     }
 
     private function isSameOrigin(ServerRequestInterface $request): bool
@@ -123,13 +184,20 @@ final class ChatProxyMiddleware implements MiddlewareInterface
         return false;
     }
 
-    private function errorResponse(int $status, string $message): ResponseInterface
+    /**
+     * @param array<string, string> $headers
+     */
+    private function errorResponse(int $status, string $message, array $headers = []): ResponseInterface
     {
         $body = json_encode(['error' => $message], JSON_THROW_ON_ERROR);
 
         $response = $this->responseFactory->createResponse($status)
             ->withHeader('Content-Type', 'application/json; charset=utf-8')
             ->withHeader('Cache-Control', 'no-store');
+
+        foreach ($headers as $name => $value) {
+            $response = $response->withHeader($name, $value);
+        }
 
         $response->getBody()->write($body);
 

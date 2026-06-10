@@ -2,4 +2,13 @@
 
 defined('TYPO3') or die();
 
-// Minimal ext_localconf.php for v13 — most wiring is in the Site Set and Services.yaml.
+// Register rate limiter cache.
+// Deliberately NOT in the 'pages' or 'all' groups: a backend "clear cache" must
+// not reset rate-limit counters (that would make the limit trivially bypassable).
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['chatbot_ratelimit'] ??= [
+    'frontend' => \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend::class,
+    'backend' => \TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend::class,
+    'options' => [
+        'defaultLifetime' => 120,
+    ],
+];
