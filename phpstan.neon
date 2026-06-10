@@ -9,9 +9,3 @@ parameters:
       - Tests/*
 
   treatPhpDocTypesAsCertain: false
-
-  extensions:
-    - SaschaEgerer\PhpstanTypo3\PhpstanTypo3Extension
-
-  typo3:
-    rootPath: .
