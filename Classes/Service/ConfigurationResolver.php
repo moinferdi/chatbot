@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moinferdi\Chatbot\Service;
 
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Context\LanguageAspectFactory;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
@@ -34,10 +35,17 @@ final class ConfigurationResolver
             return ChatbotConfig::disabled();
         }
 
-        if ($languageId > 0) {
-            $overlay = $this->pageRepository->getPageOverlay($rootPage, $languageId);
+        if ($languageId > 0 && $language instanceof SiteLanguage) {
+            // Overlay the root page with its translation, honouring the site
+            // language's configured fallback chain. Connection fields are
+            // l10n_mode=exclude, so only the start message changes per language.
+            $overlay = $this->pageRepository->getLanguageOverlay(
+                'pages',
+                $rootPage,
+                LanguageAspectFactory::createFromSiteLanguage($language),
+            );
             if (is_array($overlay)) {
-                $rootPage = array_merge($rootPage, $overlay);
+                $rootPage = $overlay;
             }
         }
 

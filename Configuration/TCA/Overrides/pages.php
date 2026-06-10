@@ -124,6 +124,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
         'tx_chatbot_start_message' => [
             'exclude' => true,
             'label' => $ll . 'pages.tx_chatbot_start_message',
+            'description' => $ll . 'pages.tx_chatbot_start_message.description',
             'config' => [
                 'type' => 'text',
                 'cols' => 40,
@@ -159,5 +160,15 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
     foreach (array_keys($columns) as $field) {
         $GLOBALS['TCA']['pages']['columns'][$field]['displayCond'] = 'FIELD:is_siteroot:=:1';
+    }
+
+    // Connection settings are site-wide and shared across all languages; only the
+    // start message is per-language. l10n_mode=exclude makes a translated root page
+    // inherit the default-language value instead of overwriting it with a blank
+    // (which previously could wipe out the API key in non-default languages).
+    foreach (array_keys($columns) as $field) {
+        if ($field !== 'tx_chatbot_start_message') {
+            $GLOBALS['TCA']['pages']['columns'][$field]['l10n_mode'] = 'exclude';
+        }
     }
 })();

@@ -14,6 +14,7 @@
       <trans-unit id="pages.tx_chatbot_color_text" resname="pages.tx_chatbot_color_text"><source>Text Color</source></trans-unit>
       <trans-unit id="pages.tx_chatbot_position" resname="pages.tx_chatbot_position"><source>Widget Position</source></trans-unit>
       <trans-unit id="pages.tx_chatbot_start_message" resname="pages.tx_chatbot_start_message"><source>Start Message</source></trans-unit>
+      <trans-unit id="pages.tx_chatbot_start_message.description" resname="pages.tx_chatbot_start_message.description"><source>Shown when the chat opens. This field is per-language: translate the root page to set a greeting for each language. Leave empty to use the built-in localized default. All other settings above are shared across languages.</source></trans-unit>
       <trans-unit id="pages.tx_chatbot_position.bottom-right" resname="pages.tx_chatbot_position.bottom-right"><source>Bottom Right</source></trans-unit>
       <trans-unit id="pages.tx_chatbot_position.bottom-left" resname="pages.tx_chatbot_position.bottom-left"><source>Bottom Left</source></trans-unit>
       <trans-unit id="CType.chatbot_widget" resname="CType.chatbot_widget"><source>Chatbot Widget</source></trans-unit>

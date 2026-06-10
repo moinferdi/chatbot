@@ -14,6 +14,7 @@
       <trans-unit id="widget.error.network" resname="widget.error.network"><source>Network error. Check your connection.</source></trans-unit>
       <trans-unit id="widget.error.disabled" resname="widget.error.disabled"><source>The chatbot is currently unavailable.</source></trans-unit>
       <trans-unit id="widget.poweredBy" resname="widget.poweredBy"><source>Powered by AI</source></trans-unit>
+      <trans-unit id="widget.startMessage" resname="widget.startMessage"><source>Hello! How can I help you today?</source></trans-unit>
     </body>
   </file>
 </xliff>

@@ -196,6 +196,18 @@
 
           try {
             const parsed = JSON.parse(payload);
+            // Proxy-emitted error frame (event: error) — surface it instead of
+            // silently ending up with an empty reply.
+            if (parsed.error) {
+              removeLoading();
+              if (streamContainer) streamContainer.remove();
+              showError(
+                typeof parsed.error === "string"
+                  ? parsed.error
+                  : "Something went wrong. Please try again."
+              );
+              return true;
+            }
             const choice = parsed.choices?.[0];
             const delta = choice?.delta?.content ?? choice?.message?.content ?? "";
             if (delta) appendDelta(delta);

@@ -14,6 +14,7 @@
       <trans-unit id="widget.error.network" resname="widget.error.network"><target>Netzwerkfehler. Bitte prüfen Sie Ihre Verbindung.</target></trans-unit>
       <trans-unit id="widget.error.disabled" resname="widget.error.disabled"><target>Der Chatbot ist derzeit nicht verfügbar.</target></trans-unit>
       <trans-unit id="widget.poweredBy" resname="widget.poweredBy"><target>Bereitgestellt von KI</target></trans-unit>
+      <trans-unit id="widget.startMessage" resname="widget.startMessage"><source>Hello! How can I help you today?</source><target>Hallo! Wie kann ich Ihnen helfen?</target></trans-unit>
     </body>
   </file>
 </xliff>

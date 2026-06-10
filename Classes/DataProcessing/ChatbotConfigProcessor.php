@@ -5,13 +5,19 @@ declare(strict_types=1);
 namespace Moinferdi\Chatbot\DataProcessing;
 
 use Moinferdi\Chatbot\Service\ConfigurationResolver;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
+use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
 
 final class ChatbotConfigProcessor implements DataProcessorInterface
 {
+    private const DEFAULT_START_MESSAGE = 'LLL:EXT:chatbot/Resources/Private/Language/locallang.xlf:widget.startMessage';
+
     public function __construct(
         private readonly ConfigurationResolver $configResolver,
+        private readonly LanguageServiceFactory $languageServiceFactory,
     ) {}
 
     public function process(
@@ -41,13 +47,29 @@ final class ChatbotConfigProcessor implements DataProcessorInterface
         $processedData['render'] = $render;
         $processedData['endpointUrl'] = '/chatbot/api/chat';
         $processedData['model'] = $config->model;
-        $processedData['startMessage'] = $config->startMessage ?? '';
+        // Per-language greeting: the DB override (resolved from the current
+        // language's root-page translation) wins; otherwise fall back to the
+        // localized default greeting shipped via XLF.
+        $override = (string)($config->startMessage ?? '');
+        $processedData['startMessage'] = $override !== ''
+            ? $override
+            : $this->localizedDefaultStartMessage($request);
         $processedData['colorPrimary'] = $config->colorPrimary;
         $processedData['colorBackground'] = $config->colorBackground;
         $processedData['colorText'] = $config->colorText;
         $processedData['position'] = $config->position;
 
         return $processedData;
+    }
+
+    private function localizedDefaultStartMessage(ServerRequestInterface $request): string
+    {
+        $language = $request->getAttribute('language');
+        $languageService = $language instanceof SiteLanguage
+            ? $this->languageServiceFactory->createFromSiteLanguage($language)
+            : $this->languageServiceFactory->create('default');
+
+        return $languageService->sL(self::DEFAULT_START_MESSAGE);
     }
 
     private function getRequest(ContentObjectRenderer $cObj): ?\Psr\Http\Message\ServerRequestInterface

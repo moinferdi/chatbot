@@ -104,8 +104,16 @@ the API key field. The extension resolves this at runtime using `getenv()`.
 
 ## Multi-language
 
-- **Start message**: Translated via page language overlays on the site root.
-  Each language has its own greeting.
+- **Start message**: per-language. Every site language gets a built-in localized
+  default greeting (shipped via XLIFF — see `widget.startMessage`). To customize it
+  for a language, **translate the site root page** and set its *Start Message* field;
+  that override wins for that language, otherwise the localized default is used.
+  Adding a new site language automatically yields another greeting — one field, N
+  languages, no extra fields.
+- **Connection settings are shared**: API key, base URL, model, colours and position
+  are site-wide (`l10n_mode=exclude`) — you configure them once on the default-language
+  root page and every language reuses them. You do **not** re-enter the API key per
+  language.
 - **UI strings**: Translated via XLIFF files in `Resources/Private/Language/`.
   German (`de.locallang.xlf`) is included.
 - **Model tone**: The proxy injects a system message naming the site's current

@@ -54,7 +54,9 @@ Each root page can override settings via the "Chatbot" tab in page properties:
 - **API Key** — Authentication key (use `%env(CHATBOT_API_KEY)%` for environment variable)
 - **Colors** — Primary, background, and text colors
 - **Position** — Widget placement (bottom-right or bottom-left)
-- **Start Message** — Welcome message shown on first open
+- **Start Message** — Welcome message shown on first open. Per-language: each site
+  language has a built-in localized default; translate the root page to override it for
+  a specific language. All settings above are shared across languages.
 
 ### Environment Variables
 
