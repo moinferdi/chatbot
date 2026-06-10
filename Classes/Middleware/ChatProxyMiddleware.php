@@ -153,8 +153,11 @@ final class ChatProxyMiddleware implements MiddlewareInterface
                 'detail' => $e->getMessage(),
             ]);
             yield "event: error\ndata: " . json_encode(['error' => 'Bad Gateway'], JSON_THROW_ON_ERROR) . "\n\n";
-        } catch (\RuntimeException $e) {
-            $this->logger->error('Chatbot stream connection failure', ['error' => $e->getMessage()]);
+        } catch (\Throwable $e) {
+            // Once the 200/text-event-stream headers are out, the only way to
+            // signal failure is an SSE error frame — never let it bubble into a
+            // 500 page mid-stream.
+            $this->logger->error('Chatbot stream failure', ['error' => $e->getMessage()]);
             yield "event: error\ndata: " . json_encode(['error' => 'Bad Gateway'], JSON_THROW_ON_ERROR) . "\n\n";
         }
     }

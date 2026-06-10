@@ -38,6 +38,43 @@ final class ChatClient
     }
 
     /**
+     * Extract a human-readable error message from an upstream error body,
+     * tolerating the different shapes providers use:
+     *  - OpenAI / OpenRouter: {"error": {"message": "...", "code": "..."}}
+     *  - OpenWebUI / FastAPI: {"detail": "..."}
+     *  - others:              {"error": "..."} or {"message": "..."}
+     */
+    private function extractErrorDetail(string $rawBody): string
+    {
+        try {
+            $data = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return mb_substr($rawBody, 0, 200);
+        }
+
+        if (!is_array($data)) {
+            return mb_substr($rawBody, 0, 200);
+        }
+
+        // OpenAI / OpenRouter: error is a nested object.
+        if (isset($data['error']) && is_array($data['error'])) {
+            $message = $data['error']['message'] ?? $data['error']['code'] ?? null;
+            if (is_string($message) && $message !== '') {
+                return $message;
+            }
+        }
+
+        // Flat string variants.
+        foreach (['detail', 'error', 'message'] as $key) {
+            if (isset($data[$key]) && is_string($data[$key]) && $data[$key] !== '') {
+                return $data[$key];
+            }
+        }
+
+        return mb_substr($rawBody, 0, 200);
+    }
+
+    /**
      * @throws UpstreamException when the upstream API returns an error (4xx/5xx)
      * @throws \RuntimeException when the upstream is unreachable
      */
@@ -64,13 +101,7 @@ final class ChatClient
             $responseBody = (string) $response->getBody();
 
             if ($response->getStatusCode() !== 200) {
-                $detail = '';
-                try {
-                    $errData = json_decode($responseBody, true, 512, JSON_THROW_ON_ERROR);
-                    $detail = $errData['detail'] ?? $errData['error'] ?? $errData['message'] ?? '';
-                } catch (\JsonException) {
-                    $detail = mb_substr($responseBody, 0, 200);
-                }
+                $detail = $this->extractErrorDetail($responseBody);
 
                 $this->logger->error('Chatbot upstream error', [
                     'status' => $response->getStatusCode(),
@@ -154,14 +185,7 @@ final class ChatClient
         $responseBody = $response->getBody();
 
         if ($response->getStatusCode() !== 200) {
-            $raw = (string) $responseBody;
-            $detail = '';
-            try {
-                $errData = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
-                $detail = $errData['detail'] ?? $errData['error'] ?? $errData['message'] ?? '';
-            } catch (\JsonException) {
-                $detail = mb_substr($raw, 0, 200);
-            }
+            $detail = $this->extractErrorDetail((string) $responseBody);
 
             $this->logger->error('Chatbot upstream stream error', [
                 'status' => $response->getStatusCode(),
