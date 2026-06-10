@@ -49,7 +49,7 @@ final class ConfigurationResolver
             }
         }
 
-        $settings = $request->getAttribute('site')->getConfiguration()['settings']['chatbot'] ?? [];
+        $settings = $site->getConfiguration()['settings']['chatbot'] ?? [];
 
         $enabled = (bool)($rootPage['tx_chatbot_enabled'] ?? $settings['enabled'] ?? false);
         if (!$enabled) {

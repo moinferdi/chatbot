@@ -49,7 +49,7 @@ final class RateLimiter
 
         $entry['count']++;
         // Preserve remaining TTL
-        $remainingTtl = self::WINDOW_SECONDS - ($now - $entry['windowStart']);
+        $remainingTtl = self::WINDOW_SECONDS - ($now - (int)$entry['windowStart']);
         $this->cache->set($key, $entry, [], max(1, $remainingTtl));
         return true;
     }
@@ -66,7 +66,7 @@ final class RateLimiter
             return 0;
         }
 
-        $elapsed = time() - $entry['windowStart'];
-        return max(1, self::WINDOW_SECONDS - $elapsed);
+        $elapsed = time() - (int)$entry['windowStart'];
+        return (int)max(1, self::WINDOW_SECONDS - $elapsed);
     }
 }
