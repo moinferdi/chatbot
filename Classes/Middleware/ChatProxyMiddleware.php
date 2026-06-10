@@ -21,7 +21,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 final class ChatProxyMiddleware implements MiddlewareInterface
 {
-    private const string ENDPOINT_PATH = '/chatbot/api/chat';
+    private const ENDPOINT_PATH = '/chatbot/api/chat';
 
     public function __construct(
         private readonly ConfigurationResolver $configResolver,

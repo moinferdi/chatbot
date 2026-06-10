@@ -13,8 +13,8 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
  */
 final class RateLimiter
 {
-    private const int MAX_REQUESTS = 20;
-    private const int WINDOW_SECONDS = 60;
+    private const MAX_REQUESTS = 20;
+    private const WINDOW_SECONDS = 60;
 
     public function __construct(
         private readonly FrontendInterface $cache,

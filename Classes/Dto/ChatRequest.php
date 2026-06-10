@@ -10,8 +10,8 @@ final class ChatRequest
     public readonly array $messages;
     public readonly string $model;
 
-    private const int MAX_MESSAGES = 50;
-    private const int MAX_MESSAGE_LENGTH = 4000;
+    private const MAX_MESSAGES = 50;
+    private const MAX_MESSAGE_LENGTH = 4000;
 
     public static function fromArray(array $data): self
     {
