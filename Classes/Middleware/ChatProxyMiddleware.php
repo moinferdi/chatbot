@@ -7,6 +7,7 @@ namespace Moinferdi\Chatbot\Middleware;
 use Moinferdi\Chatbot\Dto\ChatRequest;
 use Moinferdi\Chatbot\Service\ChatClient;
 use Moinferdi\Chatbot\Service\ConfigurationResolver;
+use Moinferdi\Chatbot\Service\UpstreamException;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -70,9 +71,17 @@ final class ChatProxyMiddleware implements MiddlewareInterface
 
         try {
             $reply = $this->chatClient->complete($chatRequest, $config);
+        } catch (UpstreamException $e) {
+            // API returned an error — pass the detail back to the client for debugging
+            $this->logger->error('Chatbot upstream API error', [
+                'httpStatus' => $e->httpStatus,
+                'detail' => $e->getMessage(),
+            ]);
+            return $this->errorResponse(502, 'Upstream error: ' . $e->getMessage());
         } catch (\RuntimeException $e) {
-            $this->logger->error('Chatbot proxy upstream failure', ['error' => $e->getMessage()]);
-            return $this->errorResponse(502, 'Upstream chat service unavailable.');
+            // Connection-level failure (timeout, DNS, TLS)
+            $this->logger->error('Chatbot proxy connection failure', ['error' => $e->getMessage()]);
+            return $this->errorResponse(502, 'Cannot reach chat backend. Check the OpenWebUI URL.');
         }
 
         $responseBody = json_encode([
