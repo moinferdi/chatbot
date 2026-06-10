@@ -1,0 +1,17 @@
+parameters:
+  level: 8
+  paths:
+    - Classes/
+    - Tests/
+
+  excludePaths:
+    analyse:
+      - Tests/*
+
+  treatPhpDocTypesAsCertain: false
+
+  extensions:
+    - SaschaEgerer\PhpstanTypo3\PhpstanTypo3Extension
+
+  typo3:
+    rootPath: .
