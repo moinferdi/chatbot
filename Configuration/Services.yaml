@@ -26,6 +26,13 @@ services:
     arguments:
       $httpClient: '@chatbot.guzzle_client'
 
+  # Expose the custom cache as a DI service (TYPO3 only auto-registers core caches).
+  cache.chatbot_ratelimit:
+    class: TYPO3\CMS\Core\Cache\Frontend\FrontendInterface
+    factory: ['@TYPO3\CMS\Core\Cache\CacheManager', 'getCache']
+    arguments:
+      - 'chatbot_ratelimit'
+
   Moinferdi\Chatbot\Service\RateLimiter:
     arguments:
       $cache: '@cache.chatbot_ratelimit'

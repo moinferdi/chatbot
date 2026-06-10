@@ -120,8 +120,14 @@ final class ChatClient
             ->withBody($this->streamFactory->createStream($body));
 
         try {
-            // Guzzle stream option prevents buffering the full response
-            $response = $this->httpClient->send($request, ['stream' => true]);
+            $response = $this->httpClient->send($request, [
+                // Stream the body instead of buffering it.
+                'stream' => true,
+                // No total cap: a long generation must not be cut off mid-stream.
+                'timeout' => 0,
+                // Instead, abort only if the upstream stalls (no new bytes) for 30s.
+                'read_timeout' => 30,
+            ]);
         } catch (\Throwable $e) {
             $this->logger->error('Chatbot stream failure', ['exception' => $e->getMessage()]);
             throw new \RuntimeException('Stream connection to chat backend lost.', 0, $e);
