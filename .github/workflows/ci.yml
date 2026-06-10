@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-php@v6
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           extensions: json, mbstring
@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-php@v6
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           extensions: json, mbstring
