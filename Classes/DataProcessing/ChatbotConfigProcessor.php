@@ -20,6 +20,12 @@ final class ChatbotConfigProcessor implements DataProcessorInterface
         private readonly LanguageServiceFactory $languageServiceFactory,
     ) {}
 
+    /**
+     * @param array<string, mixed> $contentObjectConfiguration
+     * @param array<string, mixed> $processorConfiguration
+     * @param array<string, mixed> $processedData
+     * @return array<string, mixed>
+     */
     public function process(
         ContentObjectRenderer $cObj,
         array $contentObjectConfiguration,
@@ -27,10 +33,6 @@ final class ChatbotConfigProcessor implements DataProcessorInterface
         array $processedData
     ): array {
         $request = $this->getRequest($cObj);
-        if (!$request) {
-            return ['render' => false] + $processedData;
-        }
-
         $config = $this->configResolver->resolve($request);
 
         if (!$config->enabled) {
@@ -72,16 +74,13 @@ final class ChatbotConfigProcessor implements DataProcessorInterface
         return $languageService->sL(self::DEFAULT_START_MESSAGE);
     }
 
-    private function getRequest(ContentObjectRenderer $cObj): ?\Psr\Http\Message\ServerRequestInterface
+    private function getRequest(ContentObjectRenderer $cObj): \Psr\Http\Message\ServerRequestInterface
     {
         $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
         if ($request instanceof \Psr\Http\Message\ServerRequestInterface) {
             return $request;
         }
-        if ($cObj->getRequest() instanceof \Psr\Http\Message\ServerRequestInterface) {
-            return $cObj->getRequest();
-        }
-        return null;
+        return $cObj->getRequest();
     }
 
     private function isGlobalInjection(ContentObjectRenderer $cObj): bool

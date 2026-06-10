@@ -13,6 +13,18 @@ final class ChatRequest
     private const MAX_MESSAGES = 50;
     private const MAX_MESSAGE_LENGTH = 4000;
 
+    /**
+     * @param list<array{role: string, content: string}> $messages
+     */
+    private function __construct(array $messages, string $model)
+    {
+        $this->messages = $messages;
+        $this->model = $model;
+    }
+
+    /**
+     * @param array<mixed> $data
+     */
     public static function fromArray(array $data): self
     {
         if (!isset($data['messages']) || !is_array($data['messages'])) {
@@ -25,6 +37,7 @@ final class ChatRequest
             );
         }
 
+        $messages = [];
         foreach ($data['messages'] as $msg) {
             if (!isset($msg['role'], $msg['content']) || !is_string($msg['role']) || !is_string($msg['content'])) {
                 throw new \InvalidArgumentException('Each message must have string "role" and "content".');
@@ -37,13 +50,11 @@ final class ChatRequest
                     'Message too long. Maximum is ' . self::MAX_MESSAGE_LENGTH . ' characters.'
                 );
             }
+            $messages[] = ['role' => $msg['role'], 'content' => $msg['content']];
         }
 
         $model = isset($data['model']) && is_string($data['model']) ? trim($data['model']) : '';
 
-        $self = new self();
-        $self->messages = $data['messages'];
-        $self->model = $model;
-        return $self;
+        return new self($messages, $model);
     }
 }
