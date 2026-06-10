@@ -24,6 +24,13 @@ LLM chatbot widget for TYPO3 v13 — BYOK, OpenWebUI-first, proxy-backed.
 composer require moinferdi/chatbot
 ```
 
+After installation, run the **Database Analyzer** in the TYPO3 Install Tool
+to create the required columns on the `pages` table:
+
+> Admin Tools → Maintenance → Analyze Database → Apply changes
+
+Then **flush all caches** (Admin Tools → Maintenance → Flush Cache).
+
 ## Configuration
 
 ### Site Settings
