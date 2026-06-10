@@ -20,12 +20,30 @@ final class ChatClient
     ) {}
 
     /**
+     * Resolve the chat-completions endpoint from the configured base URL.
+     *
+     * - If the base already points at a completions endpoint, it is used
+     *   verbatim — so any OpenAI-compatible provider works, e.g. OpenRouter:
+     *   https://openrouter.ai/api/v1/chat/completions
+     * - Otherwise an OpenWebUI host is assumed and its native path is appended
+     *   (keeps existing configs working): {base}/api/chat/completions
+     */
+    private function endpointUrl(ChatbotConfig $config): string
+    {
+        $base = rtrim($config->baseUrl, '/');
+        if (str_contains($base, '/chat/completions')) {
+            return $base;
+        }
+        return $base . '/api/chat/completions';
+    }
+
+    /**
      * @throws UpstreamException when the upstream API returns an error (4xx/5xx)
      * @throws \RuntimeException when the upstream is unreachable
      */
     public function complete(ChatRequest $chatRequest, ChatbotConfig $config): string
     {
-        $url = rtrim($config->baseUrl, '/') . '/api/chat/completions';
+        $url = $this->endpointUrl($config);
 
         $payload = [
             'model' => $config->model,
@@ -103,7 +121,7 @@ final class ChatClient
      */
     public function completeStream(ChatRequest $chatRequest, ChatbotConfig $config): \Generator
     {
-        $url = rtrim($config->baseUrl, '/') . '/api/chat/completions';
+        $url = $this->endpointUrl($config);
 
         $payload = [
             'model' => $config->model,

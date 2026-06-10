@@ -109,6 +109,7 @@
     autoResize();
     addMessage("user", text);
     setInputEnabled(false);
+    showLoading();
 
     try {
       const streamed = await sendStream(text);
@@ -136,6 +137,7 @@
       });
 
       if (!response.ok) {
+        removeLoading();
         let errorMsg = "Something went wrong. Please try again.";
         try {
           const err = await response.json();
@@ -148,18 +150,30 @@
       // Non-SSE response — backend didn't stream
       const contentType = response.headers.get("content-type") || "";
       if (!contentType.includes("text/event-stream")) {
+        removeLoading();
         const data = await response.json();
         const reply = data.content || data.message || "No response.";
         addMessage("assistant", reply);
         return true;
       }
 
-      showLoading();
-      const streamContainer = createStreamMessage();
+      let streamContainer = null;
       let fullContent = "";
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
+
+      // Keep the "thinking" loader visible until the first token arrives,
+      // then swap it for the answer bubble that fills in as tokens stream.
+      const appendDelta = (delta) => {
+        if (!streamContainer) {
+          removeLoading();
+          streamContainer = createStreamMessage();
+        }
+        fullContent += delta;
+        streamContainer.textContent = fullContent;
+        scrollToBottom();
+      };
 
       while (true) {
         const { done, value } = await reader.read();
@@ -176,7 +190,7 @@
 
           if (payload === "[DONE]") {
             removeLoading();
-            finalizeStreamMessage(streamContainer, fullContent);
+            if (streamContainer) finalizeStreamMessage(streamContainer, fullContent);
             return true;
           }
 
@@ -184,11 +198,7 @@
             const parsed = JSON.parse(payload);
             const choice = parsed.choices?.[0];
             const delta = choice?.delta?.content ?? choice?.message?.content ?? "";
-            if (delta) {
-              fullContent += delta;
-              streamContainer.textContent = fullContent;
-              scrollToBottom();
-            }
+            if (delta) appendDelta(delta);
           } catch (_) {
             // Non-JSON line, skip
           }
@@ -196,10 +206,10 @@
       }
 
       removeLoading();
-      if (fullContent) {
+      if (streamContainer && fullContent) {
         finalizeStreamMessage(streamContainer, fullContent);
       } else {
-        streamContainer.remove();
+        if (streamContainer) streamContainer.remove();
         showError("Empty response from assistant.");
       }
       return true;
