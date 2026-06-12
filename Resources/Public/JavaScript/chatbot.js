@@ -13,6 +13,8 @@
   const startMessage = widget.dataset.startMessage || "";
   const avatarUrl = widget.dataset.avatarUrl || "";
 
+  const STORAGE_KEY = "moinferdi-chatbot-session";
+
   const launcher = widget.querySelector(".cb-launcher");
   const panel = widget.querySelector("#cb-panel");
   const messagesContainer = widget.querySelector("#cb-messages");
@@ -26,6 +28,89 @@
   let messages = [];
   let abortController = null;
 
+  // ── Session persistence ──────────────────────────────────────────────
+
+  function save() {
+    try {
+      const payload = {
+        messages: messages.filter((m) => m.role === "user" || m.role === "assistant"),
+        isOpen: isOpen,
+      };
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch (_) {
+      // Quota exceeded or storage unavailable — degrade gracefully.
+    }
+  }
+
+  function restore() {
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+
+      const data = JSON.parse(raw);
+      if (!data || !Array.isArray(data.messages)) return;
+
+      messages = data.messages;
+
+      // Replay messages into the DOM.
+      for (const msg of messages) {
+        renderMessageDOM(msg.role, msg.content);
+      }
+
+      if (data.isOpen) {
+        isOpen = true;
+        widget.classList.add("cb-widget--open");
+        panel.setAttribute("aria-hidden", "false");
+        launcher.setAttribute("aria-expanded", "true");
+      }
+    } catch (_) {
+      // Corrupt storage — wipe and move on.
+      sessionStorage.removeItem(STORAGE_KEY);
+    }
+  }
+
+  /**
+   * Create DOM elements for a single message WITHOUT touching the messages
+   * array. Used during restore so we don't double-push.
+   */
+  function renderMessageDOM(role, content) {
+    if (role === "assistant") {
+      const row = document.createElement("div");
+      row.className = "cb-message-row cb-message-row--assistant";
+
+      if (avatarUrl) {
+        const img = document.createElement("img");
+        img.className = "cb-avatar";
+        img.src = avatarUrl;
+        img.alt = "";
+        img.setAttribute("aria-hidden", "true");
+        row.appendChild(img);
+      }
+
+      const bubble = document.createElement("div");
+      bubble.className = "cb-message cb-message--assistant";
+      bubble.innerHTML = renderMarkdown(content);
+      row.appendChild(bubble);
+      messagesContainer.appendChild(row);
+    } else if (role === "user") {
+      const row = document.createElement("div");
+      row.className = "cb-message-row cb-message-row--user";
+
+      const bubble = document.createElement("div");
+      bubble.className = "cb-message cb-message--user";
+      bubble.textContent = content;
+      row.appendChild(bubble);
+      messagesContainer.appendChild(row);
+    }
+    // system / error messages are never persisted — skip.
+  }
+
+  // ── Restore on boot ──────────────────────────────────────────────────
+
+  restore();
+
+  // ── Event handlers ───────────────────────────────────────────────────
+
   function open() {
     isOpen = true;
     widget.classList.add("cb-widget--open");
@@ -35,6 +120,7 @@
     if (messages.length === 0 && startMessage) {
       addMessage("assistant", startMessage);
     }
+    save();
   }
 
   function close() {
@@ -43,6 +129,7 @@
     panel.setAttribute("aria-hidden", "true");
     launcher.setAttribute("aria-expanded", "false");
     launcher.focus();
+    save();
   }
 
   launcher.addEventListener("click", () => (isOpen ? close() : open()));
@@ -99,6 +186,11 @@
 
     scrollToBottom();
     if (liveRegion) liveRegion.textContent = content;
+
+    // Persist user & assistant messages; transient errors stay ephemeral.
+    if (role === "user" || role === "assistant") {
+      save();
+    }
   }
 
   function removeLoading() {
@@ -132,6 +224,7 @@
     el.innerHTML = renderMarkdown(content);
     messages.push({ role: "assistant", content });
     if (liveRegion) liveRegion.textContent = content;
+    save();
   }
 
   function showLoading() {
