@@ -148,16 +148,11 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
         'tx_chatbot_avatar' => [
             'exclude' => true,
             'label' => $ll . 'pages.tx_chatbot_avatar',
-            'config' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getFileFieldTCAConfig(
-                'tx_chatbot_avatar',
-                [
-                    'maxitems' => 1,
-                    'appearance' => [
-                        'createNewRelationLinkTitle' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:images.addFileReference',
-                    ],
-                ],
-                $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']
-            ),
+            'config' => [
+                'type' => 'file',
+                'allowed' => ['common-image-types'],
+                'maxitems' => 1,
+            ],
         ],
     ];
 
