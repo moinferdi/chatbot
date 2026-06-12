@@ -15,10 +15,11 @@
     id="moinferdi-chatbot"
     class="cb-widget cb-widget--{position}"
     role="region"
-    aria-label="{f:translate(key:'widget.title', extensionName:'Chatbot', default:'Chat assistant')}"
+    aria-label="{chatTitle}"
     data-endpoint="{endpointUrl}"
     data-model="{model}"
     data-start-message="{startMessage}"
+    data-avatar-url="{avatarUrl}"
     style="--cb-primary:{colorPrimary}; --cb-bg:{colorBackground}; --cb-text:{colorText};"
   >
     <button
@@ -63,8 +64,7 @@
     >
       <div class="cb-panel__header">
         <h3 class="cb-panel__title">
-          {f:translate(key:'widget.title', extensionName:'Chatbot',
-          default:'Chat assistant')}
+          {chatTitle}
         </h3>
         <button
           class="cb-panel__close"

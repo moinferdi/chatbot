@@ -66,11 +66,12 @@ final class ConfigurationResolver
         $colorText = ($rootPage['tx_chatbot_color_text'] ?? '') ?: ($settings['color']['text'] ?? '#1a1a1a');
         $position = ($rootPage['tx_chatbot_position'] ?? '') ?: ($settings['position'] ?? 'bottom-right');
         $startMessage = ($rootPage['tx_chatbot_start_message'] ?? '') ?: null;
+        $title = ($rootPage['tx_chatbot_title'] ?? '') ?: null;
 
         return ChatbotConfig::enabled(
             baseUrl: $baseUrl, apiKey: $apiKey, model: $model, everywhere: $everywhere,
             colorPrimary: $colorPrimary, colorBackground: $colorBackground, colorText: $colorText,
-            position: $position, startMessage: $startMessage,
+            position: $position, startMessage: $startMessage, title: $title,
         );
     }
 

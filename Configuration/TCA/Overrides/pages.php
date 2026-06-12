@@ -133,6 +133,32 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
                 'placeholder' => 'Hello! How can I help you today?',
             ],
         ],
+        'tx_chatbot_title' => [
+            'exclude' => true,
+            'label' => $ll . 'pages.tx_chatbot_title',
+            'description' => $ll . 'pages.tx_chatbot_title.description',
+            'config' => [
+                'type' => 'input',
+                'eval' => 'trim',
+                'size' => 40,
+                'max' => 255,
+                'placeholder' => 'Chat Assistant',
+            ],
+        ],
+        'tx_chatbot_avatar' => [
+            'exclude' => true,
+            'label' => $ll . 'pages.tx_chatbot_avatar',
+            'config' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getFileFieldTCAConfig(
+                'tx_chatbot_avatar',
+                [
+                    'maxitems' => 1,
+                    'appearance' => [
+                        'createNewRelationLinkTitle' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:images.addFileReference',
+                    ],
+                ],
+                $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']
+            ),
+        ],
     ];
 
     foreach ($columns as $field => $config) {
@@ -149,6 +175,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
         'tx_chatbot_base_url', 'tx_chatbot_model', 'tx_chatbot_api_key',
         'tx_chatbot_color_primary', 'tx_chatbot_color_background', 'tx_chatbot_color_text',
         'tx_chatbot_position', 'tx_chatbot_start_message',
+        'tx_chatbot_title', 'tx_chatbot_avatar',
     ]);
 
     ExtensionManagementUtility::addToAllTCAtypes(
@@ -167,7 +194,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
     // inherit the default-language value instead of overwriting it with a blank
     // (which previously could wipe out the API key in non-default languages).
     foreach (array_keys($columns) as $field) {
-        if ($field !== 'tx_chatbot_start_message') {
+        if ($field !== 'tx_chatbot_start_message' && $field !== 'tx_chatbot_title') {
             $GLOBALS['TCA']['pages']['columns'][$field]['l10n_mode'] = 'exclude';
         }
     }

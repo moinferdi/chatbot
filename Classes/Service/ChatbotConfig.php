@@ -17,25 +17,26 @@ final class ChatbotConfig
         public readonly string $colorText,
         public readonly string $position,
         public readonly ?string $startMessage,
+        public readonly ?string $title,
     ) {}
 
     public static function disabled(): self
     {
         return new self(
             enabled: false, baseUrl: '', apiKey: '', model: '', everywhere: false,
-            colorPrimary: '', colorBackground: '', colorText: '', position: '', startMessage: null,
+            colorPrimary: '', colorBackground: '', colorText: '', position: '', startMessage: null, title: null,
         );
     }
 
     public static function enabled(
         string $baseUrl, string $apiKey, string $model, bool $everywhere,
         string $colorPrimary, string $colorBackground, string $colorText,
-        string $position, ?string $startMessage,
+        string $position, ?string $startMessage, ?string $title = null,
     ): self {
         return new self(
             enabled: true, baseUrl: $baseUrl, apiKey: $apiKey, model: $model, everywhere: $everywhere,
             colorPrimary: $colorPrimary, colorBackground: $colorBackground, colorText: $colorText,
-            position: $position, startMessage: $startMessage,
+            position: $position, startMessage: $startMessage, title: $title,
         );
     }
 
