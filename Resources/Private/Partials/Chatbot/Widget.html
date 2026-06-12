@@ -20,7 +20,7 @@
     data-model="{model}"
     data-start-message="{startMessage}"
     data-avatar-url="{avatarUrl}"
-    style="--cb-primary:{colorPrimary}; --cb-bg:{colorBackground}; --cb-text:{colorText};"
+    style="--cb-primary:{colorPrimary}; --cb-bg:{colorBackground}; --cb-text:{colorText}; --cb-title-color:{colorTitle};"
   >
     <button
       class="cb-launcher"
@@ -63,9 +63,9 @@
       aria-modal="true"
     >
       <div class="cb-panel__header">
-        <h3 class="cb-panel__title">
+        <span class="cb-panel__title">
           {chatTitle}
-        </h3>
+        </span>
         <button
           class="cb-panel__close"
           aria-label="{f:translate(key:'widget.close', extensionName:'Chatbot', default:'Close chat')}"

@@ -10,6 +10,7 @@ CREATE TABLE pages (
     tx_chatbot_color_primary varchar(10) DEFAULT '' NOT NULL,
     tx_chatbot_color_background varchar(10) DEFAULT '' NOT NULL,
     tx_chatbot_color_text varchar(10) DEFAULT '' NOT NULL,
+    tx_chatbot_color_title varchar(10) DEFAULT '' NOT NULL,
     tx_chatbot_position varchar(20) DEFAULT '' NOT NULL,
     tx_chatbot_start_message text,
     tx_chatbot_title varchar(255) DEFAULT '' NOT NULL,
