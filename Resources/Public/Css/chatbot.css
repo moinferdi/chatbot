@@ -19,7 +19,7 @@
 .cb-widget--open .cb-panel{display:flex}
 
 .cb-panel__header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--cb-primary,#4F9EF7);color:#fff;flex-shrink:0}
-.cb-panel__title{margin:0;font-size:15px;font-weight:600}
+.cb-panel__title{margin:0;font-size:15px;font-weight:600;color:var(--cb-title-color,#fff)}
 .cb-panel__close{background:none;border:none;color:#fff;cursor:pointer;padding:4px;border-radius:4px;display:flex;align-items:center;justify-content:center}
 .cb-panel__close:hover{background:rgba(255,255,255,.2)}
 .cb-panel__close:focus-visible{outline:2px solid #fff;outline-offset:2px}

@@ -38,6 +38,7 @@ final class ChatClientTest extends TestCase
             colorPrimary: '#4F9EF7',
             colorBackground: '#ffffff',
             colorText: '#1a1a1a',
+            colorTitle: '#ffffff',
             position: 'bottom-right',
             startMessage: null,
         );
@@ -94,6 +95,7 @@ final class ChatClientTest extends TestCase
             colorPrimary: '#4F9EF7',
             colorBackground: '#ffffff',
             colorText: '#1a1a1a',
+            colorTitle: '#ffffff',
             position: 'bottom-right',
             startMessage: null,
         );
@@ -141,6 +143,7 @@ final class ChatClientTest extends TestCase
             colorPrimary: '#4F9EF7',
             colorBackground: '#ffffff',
             colorText: '#1a1a1a',
+            colorTitle: '#ffffff',
             position: 'bottom-right',
             startMessage: null,
         );

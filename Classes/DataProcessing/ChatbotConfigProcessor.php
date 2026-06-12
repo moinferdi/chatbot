@@ -69,6 +69,7 @@ final class ChatbotConfigProcessor implements DataProcessorInterface
         $processedData['colorPrimary'] = $config->colorPrimary;
         $processedData['colorBackground'] = $config->colorBackground;
         $processedData['colorText'] = $config->colorText;
+        $processedData['colorTitle'] = $config->colorTitle;
         $processedData['position'] = $config->position;
         $processedData['avatarUrl'] = $this->resolveAvatarUrl($request);
 
