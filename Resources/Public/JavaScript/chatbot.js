@@ -21,9 +21,11 @@
   const inputEl = widget.querySelector("#cb-input");
   const sendBtn = widget.querySelector("#cb-send");
   const closeBtn = widget.querySelector(".cb-panel__close");
+  const expandBtn = widget.querySelector(".cb-panel__expand");
   const liveRegion = widget.querySelector("#cb-live-region");
 
   let isOpen = false;
+  let isExpanded = false;
   let isLoading = false;
   let messages = [];
   let abortController = null;
@@ -36,6 +38,7 @@
         messages: messages.filter((m) => m.role === "user" || m.role === "assistant"),
         isOpen: isOpen,
       };
+      payload.isExpanded = isExpanded;
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     } catch (_) {
       // Quota exceeded or storage unavailable — degrade gracefully.
@@ -62,6 +65,11 @@
         widget.classList.add("cb-widget--open");
         panel.setAttribute("aria-hidden", "false");
         launcher.setAttribute("aria-expanded", "true");
+        if (data.isExpanded) {
+          isExpanded = true;
+          panel.classList.add("cb-panel--expanded");
+          expandBtn.setAttribute("aria-label", expandBtn.dataset.shrinkLabel || "Shrink chat");
+        }
       }
     } catch (_) {
       // Corrupt storage — wipe and move on.
@@ -134,6 +142,18 @@
 
   launcher.addEventListener("click", () => (isOpen ? close() : open()));
   closeBtn.addEventListener("click", () => close());
+
+  expandBtn.addEventListener("click", () => {
+    isExpanded = !isExpanded;
+    panel.classList.toggle("cb-panel--expanded", isExpanded);
+    expandBtn.setAttribute(
+      "aria-label",
+      isExpanded
+        ? (expandBtn.dataset.shrinkLabel || "Shrink chat")
+        : (expandBtn.dataset.growLabel || "Expand chat")
+    );
+    save();
+  });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && isOpen) {
       if (isLoading && abortController) {
