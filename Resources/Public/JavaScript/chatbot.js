@@ -35,7 +35,9 @@
   function save() {
     try {
       const payload = {
-        messages: messages.filter((m) => m.role === "user" || m.role === "assistant"),
+        messages: messages.filter(
+          (m) => m.role === "user" || m.role === "assistant"
+        ),
         isOpen: isOpen,
       };
       payload.isExpanded = isExpanded;
@@ -68,7 +70,11 @@
         if (data.isExpanded) {
           isExpanded = true;
           panel.classList.add("cb-panel--expanded");
-          expandBtn.setAttribute("aria-label", expandBtn.dataset.shrinkLabel || "Shrink chat");
+          widget.classList.add("cb-widget--expanded");
+          expandBtn.setAttribute(
+            "aria-label",
+            expandBtn.dataset.shrinkLabel || "Shrink chat"
+          );
         }
       }
     } catch (_) {
@@ -146,11 +152,12 @@
   expandBtn.addEventListener("click", () => {
     isExpanded = !isExpanded;
     panel.classList.toggle("cb-panel--expanded", isExpanded);
+    widget.classList.toggle("cb-widget--expanded", isExpanded);
     expandBtn.setAttribute(
       "aria-label",
       isExpanded
-        ? (expandBtn.dataset.shrinkLabel || "Shrink chat")
-        : (expandBtn.dataset.growLabel || "Expand chat")
+        ? expandBtn.dataset.shrinkLabel || "Shrink chat"
+        : expandBtn.dataset.growLabel || "Expand chat"
     );
     save();
   });
@@ -181,7 +188,8 @@
 
       const bubble = document.createElement("div");
       bubble.className =
-        "cb-message cb-message--assistant" + (extraClass ? " " + extraClass : "");
+        "cb-message cb-message--assistant" +
+        (extraClass ? " " + extraClass : "");
       bubble.innerHTML = renderMarkdown(content);
       row.appendChild(bubble);
       messagesContainer.appendChild(row);
@@ -309,7 +317,7 @@
         return true;
       }
 
-  // Non-SSE response — backend didn't stream
+      // Non-SSE response — backend didn't stream
       const contentType = response.headers.get("content-type") || "";
       if (!contentType.includes("text/event-stream")) {
         removeLoading();
@@ -352,7 +360,8 @@
 
           if (payload === "[DONE]") {
             removeLoading();
-            if (streamContainer) finalizeStreamMessage(streamContainer, fullContent);
+            if (streamContainer)
+              finalizeStreamMessage(streamContainer, fullContent);
             return true;
           }
 
@@ -371,7 +380,8 @@
               return true;
             }
             const choice = parsed.choices?.[0];
-            const delta = choice?.delta?.content ?? choice?.message?.content ?? "";
+            const delta =
+              choice?.delta?.content ?? choice?.message?.content ?? "";
             if (delta) appendDelta(delta);
           } catch (_) {
             // Non-JSON line, skip
@@ -492,10 +502,16 @@
     html = html.replace(/__(.+?)__/g, "<strong>$1</strong>");
 
     // Images ![alt](url) — before links so ![ doesn't trigger link rule
-    html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%">');
+    html = html.replace(
+      /!\[([^\]]*)\]\(([^)]+)\)/g,
+      '<img src="$2" alt="$1" style="max-width:100%">'
+    );
 
     // Links [text](url)
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    html = html.replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      '<a href="$2" target="_blank" rel="noopener">$1</a>'
+    );
 
     // Headings — process longest first to avoid # being consumed by ##
     html = html.replace(/^#### (.+)$/gm, "<h4>$1</h4>");
