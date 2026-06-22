@@ -6,7 +6,7 @@
     [/</g, "&lt;"],
     [/>/g, "&gt;"]
   ];
-  var BLOCK_TAG_RE = /^<(h[1-4]|ul|ol|li|pre|blockquote|hr|table)/;
+  var BLOCK_TAG_RE = /^<(h[1-4]|ul|ol|li|pre|blockquote|hr|table|p class="cb-md-h)/;
   function renderMarkdown(text) {
     if (!text) {
       return "";
@@ -36,10 +36,10 @@
       /\[([^\]]+)\]\(([^)]+)\)/g,
       '<a href="$2" target="_blank" rel="noopener">$1</a>'
     );
-    html = html.replace(/^#### (.+)$/gm, "<h4>$1</h4>");
-    html = html.replace(/^### (.+)$/gm, "<h3>$1</h3>");
-    html = html.replace(/^## (.+)$/gm, "<h2>$1</h2>");
-    html = html.replace(/^# (.+)$/gm, "<h1>$1</h1>");
+    html = html.replace(/^#### (.+)$/gm, '<p class="cb-md-h4">$1</p>');
+    html = html.replace(/^### (.+)$/gm, '<p class="cb-md-h3">$1</p>');
+    html = html.replace(/^## (.+)$/gm, '<p class="cb-md-h2">$1</p>');
+    html = html.replace(/^# (.+)$/gm, '<p class="cb-md-h1">$1</p>');
     html = html.replace(/^(---|\*\*\*|___)\s*$/gm, "<hr>");
     html = html.replace(/^&gt; (.+)$/gm, "<blockquote>$1</blockquote>");
     html = html.replace(/<\/blockquote>\n<blockquote>/g, "\n");

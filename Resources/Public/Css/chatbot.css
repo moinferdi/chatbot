@@ -141,6 +141,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.cb-panel__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
 .cb-panel__close,
 .cb-panel__expand {
   background: none;
@@ -196,10 +202,11 @@
   color: var(--cb-text, #fff);
   padding: 4px 0;
 }
-/* User: inverted bubble (text-colour background), max 85% width, right-aligned. */
+/* User: inverted bubble (text-colour background), right-aligned.
+   max-width lives on the row only — putting it on the bubble too creates a
+   circular shrink-to-fit that breaks short words. */
 .cb-message--user {
   align-self: flex-end;
-  max-width: 85%;
   background: var(--cb-text, #fff);
   color: var(--cb-user-text, #1a1a1a);
   padding: 10px 14px;
@@ -400,13 +407,29 @@
   padding: 4px 10px;
   opacity: 0.9;
 }
-.cb-message h1,
-.cb-message h2,
-.cb-message h3,
-.cb-message h4 {
-  font-size: 14px;
+/* Headings rendered as <p> (not <h1>-<h4>) so they don't clash with the
+   host page's heading structure / outline. Styled to look heading-like;
+   colour is inherited from .cb-message--assistant (--cb-text). */
+.cb-message p.cb-md-h1,
+.cb-message p.cb-md-h2,
+.cb-message p.cb-md-h3,
+.cb-message p.cb-md-h4 {
   font-weight: 700;
-  margin: 6px 0 2px;
+  margin: 8px 0 2px;
+  color: inherit;
+}
+.cb-message p.cb-md-h1 {
+  font-size: 18px;
+  margin-top: 10px;
+}
+.cb-message p.cb-md-h2 {
+  font-size: 16px;
+}
+.cb-message p.cb-md-h3 {
+  font-size: 15px;
+}
+.cb-message p.cb-md-h4 {
+  font-size: 14px;
 }
 .cb-message hr {
   border: none;

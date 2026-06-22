@@ -2,7 +2,9 @@
  * Lightweight Markdown → HTML renderer for assistant messages.
  *
  * Handles bold, italic, inline code, fenced code blocks, links, images,
- * headings, blockquotes, lists, horizontal rules, GFM tables, and paragraphs.
+ * headings (rendered as styled <p>, not <h1>-<h4>, to avoid clashing with
+ * the host page's heading outline), blockquotes, lists, horizontal rules,
+ * GFM tables, and paragraphs.
  *
  * This is a tiny hand-rolled renderer on purpose — pulling in a full markdown
  * library for a chat bubble would be overkill and a CSP/size burden. Output
@@ -15,7 +17,7 @@ const HTML_ESCAPE: ReadonlyArray<readonly [RegExp, string]> = [
   [/>/g, '&gt;'],
 ];
 
-const BLOCK_TAG_RE = /^<(h[1-4]|ul|ol|li|pre|blockquote|hr|table)/;
+const BLOCK_TAG_RE = /^<(h[1-4]|ul|ol|li|pre|blockquote|hr|table|p class="cb-md-h)/;
 
 /**
  * Render a markdown string to HTML. Returns '' for empty input.
@@ -67,11 +69,14 @@ export function renderMarkdown(text: string): string {
     '<a href="$2" target="_blank" rel="noopener">$1</a>',
   );
 
-  // 8. Headings — longest first so '##' isn't eaten by '#'.
-  html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
-  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+  // 8. Headings — rendered as <p class="cb-md-hN"> rather than <hN> so they
+  //    don't inject heading elements into the host page's DOM outline.
+  //    Styled as headings via CSS; colour inherited from .cb-message--assistant.
+  //    Longest first so '##' isn't eaten by '#'.
+  html = html.replace(/^#### (.+)$/gm, '<p class="cb-md-h4">$1</p>');
+  html = html.replace(/^### (.+)$/gm, '<p class="cb-md-h3">$1</p>');
+  html = html.replace(/^## (.+)$/gm, '<p class="cb-md-h2">$1</p>');
+  html = html.replace(/^# (.+)$/gm, '<p class="cb-md-h1">$1</p>');
 
   // 9. Horizontal rules.
   html = html.replace(/^(---|\*\*\*|___)\s*$/gm, '<hr>');
