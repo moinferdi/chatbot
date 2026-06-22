@@ -81,9 +81,9 @@ or JavaScript code.
 | `tx_chatbot_base_url` | OpenWebUI base URL (must be HTTPS) |
 | `tx_chatbot_model` | Model ID (e.g. `gpt-4o`, `llama3`) |
 | `tx_chatbot_api_key` | API key (input, masked; supports `%env(VAR)%`) |
-| `tx_chatbot_color_primary` | Primary accent color |
-| `tx_chatbot_color_background` | Panel background |
-| `tx_chatbot_color_text` | Text color |
+| `tx_chatbot_color_primary` | Primary color — background of the whole UI (panel, header, assistant messages, toggle) |
+| `tx_chatbot_color_text` | Text color for everything on the primary background (title, assistant, toggle) — also the user bubble background |
+| `tx_chatbot_color_user_text` | Text color inside the user's message bubble |
 | `tx_chatbot_position` | Widget position: bottom-right / bottom-left |
 | `tx_chatbot_start_message` | Greeting text (language-aware) |
 
@@ -94,7 +94,7 @@ Configured in `Configuration/Sets/Chatbot/settings.definitions.yaml`:
 - `chatbot.enabled`
 - `chatbot.openWebUiBaseUrl`
 - `chatbot.defaultModel`
-- `chatbot.color.primary` / `chatbot.color.background` / `chatbot.color.text`
+- `chatbot.color.primary` / `chatbot.color.text` / `chatbot.color.userText`
 - `chatbot.position`
 
 ### Environment variable for API key

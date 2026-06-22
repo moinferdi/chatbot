@@ -8,3 +8,8 @@
 .idea/
 .vscode/
 *.swp
+
+# PHP / Composer build artifacts (regenerated locally & in CI).
+/vendor/
+/.phpunit.cache/
+/public/

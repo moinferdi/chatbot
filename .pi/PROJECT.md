@@ -257,7 +257,7 @@ Error body parsing handles:
 
 ## 10. Frontend Assets
 
-- **CSS:** `Resources/Public/Css/chatbot.css` — ~450 lines, themed via `--cb-primary`, `--cb-bg`, `--cb-text`, `--cb-title-color` CSS custom properties
+- **CSS:** `Resources/Public/Css/chatbot.css` — flat monochrome-on-primary theme via `--cb-primary`, `--cb-text`, `--cb-user-text` CSS custom properties. No border-radius; panel slides in from the configured side and grows from the corner when expanded.
 - **JS source:** `Build/Sources/TypeScript/*.ts` — strict TypeScript, split into 8 focused ES modules (entry, controller, api, render, markdown, storage, config, types). No IIFE; modern TS (`interface`/`type`, `readonly`, `class` with `private`, literal-union types, `async`/`await`, `AbortController`, `??`/`?.`).
 - **JS artifact:** `Resources/Public/JavaScript/chatbot.js` — esbuild IIFE bundle of the above (~20kb). Source is modular ESM; artifact is one file (TYPO3 core's approach).
 - **Build:** `cd Build && npm install && npm run build` (or `watch` / `typecheck`). esbuild + TypeScript. Output committed so TYPO3 installs don't need Node.
