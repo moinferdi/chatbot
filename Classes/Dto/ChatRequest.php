@@ -11,7 +11,7 @@ final class ChatRequest
     public readonly string $model;
 
     private const MAX_MESSAGES = 50;
-    private const MAX_MESSAGE_LENGTH = 4000;
+    private const MAX_MESSAGE_LENGTH = 32000;
 
     /**
      * @param list<array{role: string, content: string}> $messages
