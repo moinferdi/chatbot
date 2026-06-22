@@ -105,11 +105,6 @@
   font-weight: 600;
   color: var(--cb-title-color, #fff);
 }
-.cb-panel__actions {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
 .cb-panel__close,
 .cb-panel__expand {
   background: none;
@@ -178,7 +173,7 @@
   font-size: 12px;
   color: var(--cb-text, #1a1a1a);
   opacity: 0.7;
-  max-width: 85%;
+  max-width: 90%;
   text-align: center;
   padding: 6px 12px;
 }
@@ -188,7 +183,6 @@
   color: #991b1b;
   border-radius: 8px;
   font-size: 12.5px;
-  max-width: 85%;
   padding: 8px 14px;
 }
 
@@ -301,14 +295,13 @@
   display: flex;
   align-items: flex-end;
   gap: 8px;
-  max-width: 85%;
+  max-width: 90%;
 }
 .cb-message-row--assistant {
   align-self: flex-start;
 }
 .cb-message-row--user {
   align-self: flex-end;
-  justify-content: flex-end;
 }
 .cb-avatar {
   width: 28px;
@@ -407,43 +400,6 @@
   }
   .cb-panel__messages {
     max-height: calc(100vh - 300px);
-  }
-}
-
-/* Expanded / grow state — desktop: anchored at bottom, half viewport */
-.cb-panel--expanded {
-  position: fixed;
-  width: 50vw;
-  height: 50vh;
-  max-height: 50vh;
-  z-index: 10001;
-  bottom: 20px;
-  border-radius: 16px;
-}
-.cb-widget--bottom-right .cb-panel--expanded {
-  right: 20px;
-}
-.cb-widget--bottom-left .cb-panel--expanded {
-  left: 20px;
-}
-.cb-panel--expanded .cb-panel__messages {
-  max-height: none;
-  flex: 1;
-}
-/* Expanded fullscreen on mobile — hide launcher behind panel */
-@media (max-width: 480px) {
-  .cb-panel--expanded {
-    top: 0;
-    left: 0;
-    bottom: auto;
-    right: auto;
-    width: 100vw;
-    height: 100vh;
-    max-height: 100vh;
-    border-radius: 0;
-  }
-  .cb-widget--expanded .cb-launcher {
-    display: none;
   }
 }
 
