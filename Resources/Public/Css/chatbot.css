@@ -194,6 +194,11 @@
   line-height: 1.55;
   overflow-wrap: break-word;
   border-radius: 0;
+  /* Flex item in .cb-panel__messages (flex column). Default min-width:auto
+     = min-content, which a wide table inflates and blows out the whole panel.
+     min-width:0 lets the item shrink so the table's own overflow-x scrolls. */
+  min-width: 0;
+  max-width: 100%;
 }
 /* Assistant: full available width, transparent over the primary background. */
 .cb-message--assistant {
@@ -339,6 +344,8 @@
   display: flex;
   align-items: flex-end;
   gap: 8px;
+  min-width: 0;
+  max-width: 100%;
 }
 .cb-message-row--assistant {
   align-self: stretch;
