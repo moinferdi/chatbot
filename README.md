@@ -141,6 +141,39 @@ lib.contentElement {
 }
 ```
 
+## Frontend development
+
+The widget's JavaScript is written in **TypeScript** and split into small,
+focused ES modules under `Build/Sources/TypeScript/`. esbuild bundles them
+into the single shipped artifact `Resources/Public/JavaScript/chatbot.js`
+(loaded by the Fluid partial via `<f:asset.script>`, so no build step is
+needed to *use* the extension — only to *edit* the JS).
+
+| Module | Responsibility |
+|--------|----------------|
+| `chatbot.ts` | Entry point — locates the widget and boots the controller |
+| `controller.ts` | `ChatbotController` class — owns state, wires events |
+| `api.ts` | Same-origin proxy transport (SSE streaming + JSON fallback) |
+| `render.ts` | DOM rendering helpers (message rows, loader, avatar, focus trap) |
+| `markdown.ts` | Lightweight Markdown → HTML renderer |
+| `storage.ts` | sessionStorage persistence |
+| `config.ts` | Reads `data-*` attributes into a typed config |
+| `types.ts` | Shared types and constants |
+
+To rebuild after editing the TypeScript:
+
+```bash
+cd Build
+npm install      # first time only
+npm run build    # one-shot bundle
+npm run watch    # rebuild on save
+npm run typecheck
+```
+
+This mirrors how TYPO3 v13 core builds its own JavaScript (esbuild,
+single-file outputs). The shipped artifact is committed so TYPO3 installs
+don't need Node.
+
 ## License
 
 MIT

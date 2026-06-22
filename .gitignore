@@ -1,0 +1,10 @@
+# Build tooling (npm) — node_modules are dev-only and regenerated locally.
+# The lockfile IS committed for reproducible CI builds.
+/Build/node_modules/
+/Build/npm-debug.log*
+
+# Editor / OS cruft.
+.DS_Store
+.idea/
+.vscode/
+*.swp
