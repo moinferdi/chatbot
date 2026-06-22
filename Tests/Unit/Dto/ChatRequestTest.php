@@ -48,7 +48,7 @@ final class ChatRequestTest extends TestCase
         $this->expectExceptionMessage('Too many messages');
 
         $messages = [];
-        for ($i = 0; $i <= 60; $i++) {
+        for ($i = 0; $i <= 100; $i++) {
             $messages[] = ['role' => 'user', 'content' => "Message $i"];
         }
 
@@ -76,7 +76,7 @@ final class ChatRequestTest extends TestCase
 
         ChatRequest::fromArray([
             'messages' => [
-                ['role' => 'user', 'content' => str_repeat('a', 5000)],
+                ['role' => 'user', 'content' => str_repeat('a', 33000)],
             ],
         ]);
     }
@@ -85,12 +85,12 @@ final class ChatRequestTest extends TestCase
     public function acceptsMessagesMaxCount(): void
     {
         $messages = [];
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $messages[] = ['role' => 'user', 'content' => "Message $i"];
         }
 
         $request = ChatRequest::fromArray(['messages' => $messages]);
 
-        $this->assertCount(50, $request->messages);
+        $this->assertCount(100, $request->messages);
     }
 }
