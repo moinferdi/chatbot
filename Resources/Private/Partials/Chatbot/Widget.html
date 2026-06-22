@@ -20,7 +20,7 @@
     data-model="{model}"
     data-start-message="{startMessage}"
     data-avatar-url="{avatarUrl}"
-    style="--cb-primary:{colorPrimary}; --cb-bg:{colorBackground}; --cb-text:{colorText}; --cb-title-color:{colorTitle};"
+    style="--cb-primary:{colorPrimary}; --cb-text:{colorText}; --cb-user-text:{colorUserText};"
   >
     <button
       class="cb-launcher"
@@ -53,6 +53,7 @@
         <line x1="18" y1="6" x2="6" y2="18" />
         <line x1="6" y1="6" x2="18" y2="18" />
       </svg>
+      <span class="cb-launcher__label">{chatTitle}</span>
     </button>
 
     <div

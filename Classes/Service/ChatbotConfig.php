@@ -4,6 +4,18 @@ declare(strict_types=1);
 
 namespace Moinferdi\Chatbot\Service;
 
+/**
+ * Immutable chatbot configuration.
+ *
+ * Colour scheme (3 configured colours):
+ *  - colorPrimary:  background of the whole UI (panel, header, assistant
+ *                   messages, launcher).
+ *  - colorText:     text colour for everything that sits on the primary
+ *                   background (chat title, assistant text, launcher text,
+ *                   attribution, input, links, …). Also used as the user
+ *                   message bubble background (inverted contrast).
+ *  - colorUserText: text colour inside the user's message bubble.
+ */
 final class ChatbotConfig
 {
     private function __construct(
@@ -13,9 +25,8 @@ final class ChatbotConfig
         public readonly string $model,
         public readonly bool $everywhere,
         public readonly string $colorPrimary,
-        public readonly string $colorBackground,
         public readonly string $colorText,
-        public readonly string $colorTitle,
+        public readonly string $colorUserText,
         public readonly string $position,
         public readonly ?string $startMessage,
         public readonly ?string $title,
@@ -25,20 +36,18 @@ final class ChatbotConfig
     {
         return new self(
             enabled: false, baseUrl: '', apiKey: '', model: '', everywhere: false,
-            colorPrimary: '', colorBackground: '', colorText: '', colorTitle: '', position: '', startMessage: null, title: null,
+            colorPrimary: '', colorText: '', colorUserText: '', position: '', startMessage: null, title: null,
         );
     }
 
     public static function enabled(
         string $baseUrl, string $apiKey, string $model, bool $everywhere,
-        string $colorPrimary, string $colorBackground, string $colorText,
-        string $colorTitle,
+        string $colorPrimary, string $colorText, string $colorUserText,
         string $position, ?string $startMessage, ?string $title = null,
     ): self {
         return new self(
             enabled: true, baseUrl: $baseUrl, apiKey: $apiKey, model: $model, everywhere: $everywhere,
-            colorPrimary: $colorPrimary, colorBackground: $colorBackground, colorText: $colorText,
-            colorTitle: $colorTitle,
+            colorPrimary: $colorPrimary, colorText: $colorText, colorUserText: $colorUserText,
             position: $position, startMessage: $startMessage, title: $title,
         );
     }

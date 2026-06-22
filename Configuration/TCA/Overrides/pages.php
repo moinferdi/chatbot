@@ -73,6 +73,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
         'tx_chatbot_color_primary' => [
             'exclude' => true,
             'label' => $ll . 'pages.tx_chatbot_color_primary',
+            'description' => $ll . 'pages.tx_chatbot_color_primary.description',
             'config' => [
                 'type' => 'color',
                 'size' => 10,
@@ -85,36 +86,31 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
                         ['Green', '#22C55E'],
                         ['Orange', '#F97316'],
                         ['Red', '#EF4444'],
+                        ['Slate', '#0F172A'],
+                        ['Black', '#000000'],
                     ],
                 ],
                 'default' => '#4F9EF7',
             ],
         ],
-        'tx_chatbot_color_background' => [
+        'tx_chatbot_color_text' => [
             'exclude' => true,
-            'label' => $ll . 'pages.tx_chatbot_color_background',
+            'label' => $ll . 'pages.tx_chatbot_color_text',
+            'description' => $ll . 'pages.tx_chatbot_color_text.description',
             'config' => [
                 'type' => 'color',
                 'size' => 10,
                 'default' => '#ffffff',
             ],
         ],
-        'tx_chatbot_color_text' => [
+        'tx_chatbot_color_user_text' => [
             'exclude' => true,
-            'label' => $ll . 'pages.tx_chatbot_color_text',
+            'label' => $ll . 'pages.tx_chatbot_color_user_text',
+            'description' => $ll . 'pages.tx_chatbot_color_user_text.description',
             'config' => [
                 'type' => 'color',
                 'size' => 10,
                 'default' => '#1a1a1a',
-            ],
-        ],
-        'tx_chatbot_color_title' => [
-            'exclude' => true,
-            'label' => $ll . 'pages.tx_chatbot_color_title',
-            'config' => [
-                'type' => 'color',
-                'size' => 10,
-                'default' => '#ffffff',
             ],
         ],
         'tx_chatbot_position' => [
@@ -177,8 +173,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
         '--div--;' . $ll . 'pages.tab.chatbot',
         'tx_chatbot_enabled', 'tx_chatbot_everywhere',
         'tx_chatbot_base_url', 'tx_chatbot_model', 'tx_chatbot_api_key',
-        'tx_chatbot_color_primary', 'tx_chatbot_color_background', 'tx_chatbot_color_text',
-        'tx_chatbot_color_title',
+        'tx_chatbot_color_primary', 'tx_chatbot_color_text', 'tx_chatbot_color_user_text',
         'tx_chatbot_position', 'tx_chatbot_start_message',
         'tx_chatbot_title', 'tx_chatbot_avatar',
     ]);

@@ -62,17 +62,15 @@ final class ConfigurationResolver
         $apiKey = $this->resolveEnvPlaceholder((string)($rootPage['tx_chatbot_api_key'] ?? ''));
 
         $colorPrimary = ($rootPage['tx_chatbot_color_primary'] ?? '') ?: ($settings['color']['primary'] ?? '#4F9EF7');
-        $colorBackground = ($rootPage['tx_chatbot_color_background'] ?? '') ?: ($settings['color']['background'] ?? '#ffffff');
-        $colorText = ($rootPage['tx_chatbot_color_text'] ?? '') ?: ($settings['color']['text'] ?? '#1a1a1a');
-        $colorTitle = ($rootPage['tx_chatbot_color_title'] ?? '') ?: ($settings['color']['title'] ?? '#ffffff');
+        $colorText = ($rootPage['tx_chatbot_color_text'] ?? '') ?: ($settings['color']['text'] ?? '#ffffff');
+        $colorUserText = ($rootPage['tx_chatbot_color_user_text'] ?? '') ?: ($settings['color']['userText'] ?? '#1a1a1a');
         $position = ($rootPage['tx_chatbot_position'] ?? '') ?: ($settings['position'] ?? 'bottom-right');
         $startMessage = ($rootPage['tx_chatbot_start_message'] ?? '') ?: null;
         $title = ($rootPage['tx_chatbot_title'] ?? '') ?: null;
 
         return ChatbotConfig::enabled(
             baseUrl: $baseUrl, apiKey: $apiKey, model: $model, everywhere: $everywhere,
-            colorPrimary: $colorPrimary, colorBackground: $colorBackground, colorText: $colorText,
-            colorTitle: $colorTitle,
+            colorPrimary: $colorPrimary, colorText: $colorText, colorUserText: $colorUserText,
             position: $position, startMessage: $startMessage, title: $title,
         );
     }

@@ -23,15 +23,15 @@ settings:
     default: "#4F9EF7"
     label: "LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:settings.colorPrimary"
     category: chatbot
-  chatbot.color.background:
-    type: string
-    default: "#ffffff"
-    label: "LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:settings.colorBackground"
-    category: chatbot
   chatbot.color.text:
     type: string
-    default: "#1a1a1a"
+    default: "#ffffff"
     label: "LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:settings.colorText"
+    category: chatbot
+  chatbot.color.userText:
+    type: string
+    default: "#1a1a1a"
+    label: "LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:settings.colorUserText"
     category: chatbot
   chatbot.position:
     type: string

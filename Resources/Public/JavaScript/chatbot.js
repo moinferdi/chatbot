@@ -4,7 +4,7 @@
   var HTML_ESCAPE = [
     [/&/g, "&amp;"],
     [/</g, "&lt;"],
-    [/>/g, "&gt;"],
+    [/>/g, "&gt;"]
   ];
   var BLOCK_TAG_RE = /^<(h[1-4]|ul|ol|li|pre|blockquote|hr|table)/;
   function renderMarkdown(text) {
@@ -100,38 +100,27 @@
   }
   function splitRow(line) {
     const stripped = stripPipes(line).replace(/\\\|/g, ESCAPED_PIPE);
-    return stripped
-      .split("|")
-      .map((c) => c.replace(new RegExp(ESCAPED_PIPE, "g"), "|").trim());
+    return stripped.split("|").map((c) => c.replace(new RegExp(ESCAPED_PIPE, "g"), "|").trim());
   }
   function parseAlignments(separator) {
-    return stripPipes(separator)
-      .split("|")
-      .map((cell) => {
-        const c = cell.trim();
-        const left = c.startsWith(":");
-        const right = c.endsWith(":");
-        if (left && right) return "center";
-        if (right) return "right";
-        if (left) return "left";
-        return null;
-      });
+    return stripPipes(separator).split("|").map((cell) => {
+      const c = cell.trim();
+      const left = c.startsWith(":");
+      const right = c.endsWith(":");
+      if (left && right) return "center";
+      if (right) return "right";
+      if (left) return "left";
+      return null;
+    });
   }
   function alignStyle(a) {
     return a ? ` style="text-align:${a}"` : "";
   }
   function buildTable(headerCells, aligns, bodyRows) {
-    const head = headerCells
-      .map((c, i) => `<th${alignStyle(aligns[i] ?? null)}>${c}</th>`)
-      .join("");
-    const body = bodyRows
-      .map((row) =>
-        row
-          .map((c, i) => `<td${alignStyle(aligns[i] ?? null)}>${c}</td>`)
-          .join("")
-      )
-      .map((cells) => `<tr>${cells}</tr>`)
-      .join("");
+    const head = headerCells.map((c, i) => `<th${alignStyle(aligns[i] ?? null)}>${c}</th>`).join("");
+    const body = bodyRows.map(
+      (row) => row.map((c, i) => `<td${alignStyle(aligns[i] ?? null)}>${c}</td>`).join("")
+    ).map((cells) => `<tr>${cells}</tr>`).join("");
     return `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
   }
   function processTables(html) {
@@ -261,15 +250,7 @@
     const closeBtn = widget2.querySelector(".cb-panel__close");
     const expandBtn = widget2.querySelector(".cb-panel__expand");
     const liveRegion = widget2.querySelector("#cb-live-region");
-    if (
-      !launcher ||
-      !panel ||
-      !messagesContainer ||
-      !inputEl ||
-      !sendBtn ||
-      !closeBtn ||
-      !expandBtn
-    ) {
+    if (!launcher || !panel || !messagesContainer || !inputEl || !sendBtn || !closeBtn || !expandBtn) {
       return null;
     }
     return {
@@ -281,7 +262,7 @@
       sendBtn,
       closeBtn,
       expandBtn,
-      liveRegion,
+      liveRegion
     };
   }
 
@@ -295,7 +276,8 @@
   function save(session) {
     try {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-    } catch {}
+    } catch {
+    }
   }
   function restore() {
     try {
@@ -310,12 +292,13 @@
       return {
         messages: data.messages,
         isOpen: Boolean(data.isOpen),
-        isExpanded: Boolean(data.isExpanded),
+        isExpanded: Boolean(data.isExpanded)
       };
     } catch {
       try {
         sessionStorage.removeItem(STORAGE_KEY);
-      } catch {}
+      } catch {
+      }
       return null;
     }
   }
@@ -329,7 +312,7 @@
     const body = {
       messages: opts.messages,
       model: opts.config.model,
-      stream: true,
+      stream: true
     };
     let response;
     try {
@@ -337,7 +320,7 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
-        signal: opts.signal,
+        signal: opts.signal
       });
     } catch (err) {
       if (isAbortError(err)) {
@@ -347,7 +330,7 @@
       return { kind: "error", message: ERROR_NETWORK };
     }
     if (!response.ok) {
-      const message = (await readErrorMessage(response)) ?? ERROR_GENERIC;
+      const message = await readErrorMessage(response) ?? ERROR_GENERIC;
       opts.onError(message);
       return { kind: "error", message };
     }
@@ -370,7 +353,7 @@
     const decoder = new TextDecoder();
     let buffer = "";
     let full = "";
-    for (;;) {
+    for (; ; ) {
       const { done, value } = await reader.read();
       if (done) {
         break;
@@ -396,8 +379,7 @@
           continue;
         }
         if (frame.error) {
-          const message =
-            typeof frame.error === "string" ? frame.error : ERROR_GENERIC;
+          const message = typeof frame.error === "string" ? frame.error : ERROR_GENERIC;
           opts.onError(message);
           return { kind: "error", message };
         }
@@ -464,7 +446,7 @@
           (m) => m.role === "user" || m.role === "assistant"
         ),
         isOpen: this.isOpen,
-        isExpanded: this.isExpanded,
+        isExpanded: this.isExpanded
       };
       save(session);
     }
@@ -519,8 +501,7 @@
     toggleExpand(force) {
       this.isExpanded = force ?? !this.isExpanded;
       this.els.panel.classList.toggle("cb-panel--expanded", this.isExpanded);
-      const shrinkLabel =
-        this.els.expandBtn.dataset.shrinkLabel ?? "Shrink chat";
+      const shrinkLabel = this.els.expandBtn.dataset.shrinkLabel ?? "Shrink chat";
       const growLabel = this.els.expandBtn.dataset.growLabel ?? "Expand chat";
       this.els.expandBtn.setAttribute(
         "aria-label",
@@ -603,17 +584,14 @@
               bubble.el.remove();
             }
             showError(this.els.messagesContainer, message);
-          },
+          }
         });
       } catch {
         removeLoading(this.els.messagesContainer);
         if (bubble.el) {
           bubble.el.remove();
         }
-        showError(
-          this.els.messagesContainer,
-          "Network error. Check your connection."
-        );
+        showError(this.els.messagesContainer, "Network error. Check your connection.");
       } finally {
         this.setLoading(false);
         this.els.inputEl.focus();
@@ -631,8 +609,9 @@
     /** Bind all DOM listeners once. */
     bindEvents() {
       const { els } = this;
-      els.launcher.addEventListener("click", () =>
-        this.isOpen ? this.close() : this.open()
+      els.launcher.addEventListener(
+        "click",
+        () => this.isOpen ? this.close() : this.open()
       );
       els.closeBtn.addEventListener("click", () => this.close());
       els.expandBtn.addEventListener("click", () => this.toggleExpand());
@@ -687,7 +666,7 @@
       endpoint: widget2.dataset.endpoint ?? "/chatbot/api/chat",
       model: widget2.dataset.model ?? "gpt-4o",
       startMessage: widget2.dataset.startMessage ?? "",
-      avatarUrl: widget2.dataset.avatarUrl ?? "",
+      avatarUrl: widget2.dataset.avatarUrl ?? ""
     };
   }
 
