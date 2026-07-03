@@ -520,13 +520,31 @@
 
 /* ── Mobile ─────────────────────────────────────────────────────────────────── */
 @media (max-width: 480px) {
+  /* Non-expanded: mirror the corner offset as a margin on the opposite
+     edge so the panel never flows out of the viewport. With offset 0 it
+     is flush edge-to-edge as before. The vertical cap subtracts offset-y
+     too, so a large offset can't push the top edge off-screen. */
   .cb-panel {
-    width: 100vw;
-    max-height: calc(100vh - 48px);
+    width: calc(100vw - 2 * var(--cb-offset-x, 0px));
+    max-width: calc(100vw - 2 * var(--cb-offset-x, 0px));
+    max-height: calc(100vh - var(--cb-offset-y, 0px) - 48px);
   }
+  /* Expanded: truly fullscreen, edge to edge, ignoring the offset. The
+     panel breaks out of the offset-positioned widget root via fixed
+     inset:0, so neither the corner offset nor the launcher's footprint
+     clips it. */
   .cb-panel--expanded {
+    position: fixed;
+    inset: 0;
     width: 100vw;
     max-width: 100vw;
-    max-height: calc(100vh - 48px);
+    max-height: 100vh;
+  }
+  /* In fullscreen the floating launcher would overlap the panel's
+     footer/input. Hide it only while open+expanded — the header's close
+     and shrink buttons cover exit, and closing drops --open so the
+     launcher reappears immediately. */
+  .cb-widget--open:has(.cb-panel--expanded) .cb-launcher {
+    display: none;
   }
 }
