@@ -27,7 +27,7 @@
 /* ── Widget root (positioning context, flush to the corner) ──────────────── */
 .cb-widget {
   position: fixed;
-  bottom: 0;
+  bottom: var(--cb-offset-y, 0px);
   z-index: 9999;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, sans-serif;
@@ -35,10 +35,41 @@
   line-height: 1.5;
 }
 .cb-widget--bottom-right {
-  right: 0;
+  right: var(--cb-offset-x, 0px);
 }
 .cb-widget--bottom-left {
-  left: 0;
+  left: var(--cb-offset-x, 0px);
+}
+
+/*
+ * Combined outline via directional box-shadows (not border/outline).
+ * Each single-offset, zero-blur, zero-spread shadow draws a 1px line on
+ * exactly one side. By omitting the shared edge we get one continuous
+ * outline around the launcher + panel together, with no line crossing
+ * the seam where they meet:
+ *   - panel:   top + left + right   (no bottom — that's the seam)
+ *   - launcher: left + right + bottom (no top while open — that's the seam)
+ * When closed the panel is off-screen, so the launcher re-gains its top
+ * edge to stand on its own.
+ */
+.cb-launcher {
+  box-shadow:
+    -1px 0 0 0 var(--cb-outline, transparent),
+    1px 0 0 0 var(--cb-outline, transparent),
+    0 1px 0 0 var(--cb-outline, transparent),
+    0 -1px 0 0 var(--cb-outline, transparent);
+}
+.cb-widget--open .cb-launcher {
+  box-shadow:
+    -1px 0 0 0 var(--cb-outline, transparent),
+    1px 0 0 0 var(--cb-outline, transparent),
+    0 1px 0 0 var(--cb-outline, transparent);
+}
+.cb-panel {
+  box-shadow:
+    0 -1px 0 0 var(--cb-outline, transparent),
+    -1px 0 0 0 var(--cb-outline, transparent),
+    1px 0 0 0 var(--cb-outline, transparent);
 }
 
 /* ── Launcher (flat, flush corner, shows the chat title) ─────────────────── */

@@ -15,6 +15,10 @@ namespace Moinferdi\Chatbot\Service;
  *                   attribution, input, links, …). Also used as the user
  *                   message bubble background (inverted contrast).
  *  - colorUserText: text colour inside the user's message bubble.
+ *  - colorOutline:  1px outline colour drawn around the combined widget
+ *                  (launcher + panel) via directional box-shadows so no
+ *                  line runs across the seam where they meet.
+ *  - offsetX/offsetY: pixel distance from the screen corner (0–100).
  */
 final class ChatbotConfig
 {
@@ -27,7 +31,10 @@ final class ChatbotConfig
         public readonly string $colorPrimary,
         public readonly string $colorText,
         public readonly string $colorUserText,
+        public readonly string $colorOutline,
         public readonly string $position,
+        public readonly int $offsetX,
+        public readonly int $offsetY,
         public readonly ?string $startMessage,
         public readonly ?string $title,
     ) {}
@@ -36,7 +43,8 @@ final class ChatbotConfig
     {
         return new self(
             enabled: false, baseUrl: '', apiKey: '', model: '', everywhere: false,
-            colorPrimary: '', colorText: '', colorUserText: '', position: '', startMessage: null, title: null,
+            colorPrimary: '', colorText: '', colorUserText: '', colorOutline: '',
+            position: '', offsetX: 0, offsetY: 0, startMessage: null, title: null,
         );
     }
 
@@ -44,11 +52,13 @@ final class ChatbotConfig
         string $baseUrl, string $apiKey, string $model, bool $everywhere,
         string $colorPrimary, string $colorText, string $colorUserText,
         string $position, ?string $startMessage, ?string $title = null,
+        string $colorOutline = '#ffffff', int $offsetX = 0, int $offsetY = 0,
     ): self {
         return new self(
             enabled: true, baseUrl: $baseUrl, apiKey: $apiKey, model: $model, everywhere: $everywhere,
             colorPrimary: $colorPrimary, colorText: $colorText, colorUserText: $colorUserText,
-            position: $position, startMessage: $startMessage, title: $title,
+            colorOutline: $colorOutline, position: $position, offsetX: $offsetX, offsetY: $offsetY,
+            startMessage: $startMessage, title: $title,
         );
     }
 

@@ -64,7 +64,10 @@ final class ConfigurationResolver
         $colorPrimary = ($rootPage['tx_chatbot_color_primary'] ?? '') ?: ($settings['color']['primary'] ?? '#4F9EF7');
         $colorText = ($rootPage['tx_chatbot_color_text'] ?? '') ?: ($settings['color']['text'] ?? '#ffffff');
         $colorUserText = ($rootPage['tx_chatbot_color_user_text'] ?? '') ?: ($settings['color']['userText'] ?? '#1a1a1a');
+        $colorOutline = ($rootPage['tx_chatbot_color_outline'] ?? '') ?: ($settings['color']['outline'] ?? '#ffffff');
         $position = ($rootPage['tx_chatbot_position'] ?? '') ?: ($settings['position'] ?? 'bottom-right');
+        $offsetX = $this->clampOffset((int)($rootPage['tx_chatbot_offset_x'] ?? 0));
+        $offsetY = $this->clampOffset((int)($rootPage['tx_chatbot_offset_y'] ?? 0));
         $startMessage = ($rootPage['tx_chatbot_start_message'] ?? '') ?: null;
         $title = ($rootPage['tx_chatbot_title'] ?? '') ?: null;
 
@@ -72,7 +75,17 @@ final class ConfigurationResolver
             baseUrl: $baseUrl, apiKey: $apiKey, model: $model, everywhere: $everywhere,
             colorPrimary: $colorPrimary, colorText: $colorText, colorUserText: $colorUserText,
             position: $position, startMessage: $startMessage, title: $title,
+            colorOutline: $colorOutline, offsetX: $offsetX, offsetY: $offsetY,
         );
+    }
+
+    /**
+     * Keep the pixel offset within the 0–100 range advertised by the TCA
+     * field, defending against stale or out-of-range stored values.
+     */
+    private function clampOffset(int $value): int
+    {
+        return max(0, min(100, $value));
     }
 
     private function resolveEnvPlaceholder(string $value): string

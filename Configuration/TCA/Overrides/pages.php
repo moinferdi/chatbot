@@ -113,6 +113,16 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
                 'default' => '#1a1a1a',
             ],
         ],
+        'tx_chatbot_color_outline' => [
+            'exclude' => true,
+            'label' => $ll . 'pages.tx_chatbot_color_outline',
+            'description' => $ll . 'pages.tx_chatbot_color_outline.description',
+            'config' => [
+                'type' => 'color',
+                'size' => 10,
+                'default' => '#ffffff',
+            ],
+        ],
         'tx_chatbot_position' => [
             'exclude' => true,
             'label' => $ll . 'pages.tx_chatbot_position',
@@ -124,6 +134,28 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
                     ['label' => $ll . 'pages.tx_chatbot_position.bottom-left', 'value' => 'bottom-left'],
                 ],
                 'default' => 'bottom-right',
+            ],
+        ],
+        'tx_chatbot_offset_x' => [
+            'exclude' => true,
+            'label' => $ll . 'pages.tx_chatbot_offset_x',
+            'description' => $ll . 'pages.tx_chatbot_offset_x.description',
+            'config' => [
+                'type' => 'number',
+                'range' => ['lower' => 0, 'upper' => 100],
+                'default' => 0,
+                'size' => 5,
+            ],
+        ],
+        'tx_chatbot_offset_y' => [
+            'exclude' => true,
+            'label' => $ll . 'pages.tx_chatbot_offset_y',
+            'description' => $ll . 'pages.tx_chatbot_offset_y.description',
+            'config' => [
+                'type' => 'number',
+                'range' => ['lower' => 0, 'upper' => 100],
+                'default' => 0,
+                'size' => 5,
             ],
         ],
         'tx_chatbot_start_message' => [
@@ -173,8 +205,8 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
         '--div--;' . $ll . 'pages.tab.chatbot',
         'tx_chatbot_enabled', 'tx_chatbot_everywhere',
         'tx_chatbot_base_url', 'tx_chatbot_model', 'tx_chatbot_api_key',
-        'tx_chatbot_color_primary', 'tx_chatbot_color_text', 'tx_chatbot_color_user_text',
-        'tx_chatbot_position', 'tx_chatbot_start_message',
+        'tx_chatbot_color_primary', 'tx_chatbot_color_text', 'tx_chatbot_color_user_text', 'tx_chatbot_color_outline',
+        'tx_chatbot_position', 'tx_chatbot_offset_x', 'tx_chatbot_offset_y', 'tx_chatbot_start_message',
         'tx_chatbot_title', 'tx_chatbot_avatar',
     ]);
 

@@ -33,6 +33,11 @@ settings:
     default: "#1a1a1a"
     label: "LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:settings.colorUserText"
     category: chatbot
+  chatbot.color.outline:
+    type: string
+    default: "#ffffff"
+    label: "LLL:EXT:chatbot/Resources/Private/Language/locallang_db.xlf:settings.colorOutline"
+    category: chatbot
   chatbot.position:
     type: string
     default: "bottom-right"
